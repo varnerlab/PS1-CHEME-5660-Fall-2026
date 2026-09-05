@@ -10,12 +10,14 @@ function advanced_public_checks()::Vector{NamedTuple}
     terms = load_numeric_record(joinpath(_PATH_TO_DATA, "advanced-terms.csv"));
     scenarios = load_cir_scenarios(joinpath(_PATH_TO_DATA, "cir-rate-scenarios.csv"));
 
-    # Define reusable calculations; each public check invokes only the work it needs -
+    # Supply known inputs for individual formulas; reserve the summary for integration -
     first_price = scenarios.zero_prices[1,1];
     initial_value = () -> lock_cost(terms.liability, terms.seven_period_zero_price);
     terminal_values = () -> scenario_terminal_values(
-        initial_value(), scenarios.growth_factors);
-    summary = () -> funding_summary(terminal_values(), terms.liability);
+        74_967.8414, scenarios.growth_factors);
+    summary = () -> funding_summary(scenario_terminal_values(
+        initial_value(), scenarios.growth_factors), terms.liability);
+    sample_values = [90_000.0, 100_000.0, 110_000.0]; # includes exact funding at the boundary
 
     return [
         (name = "One-period zero price implies its model yield",
@@ -25,10 +27,10 @@ function advanced_public_checks()::Vector{NamedTuple}
         (name = "One-period zero price implies its growth factor",
             evaluate = () -> isapprox(
                 growth_factor(first_price), 1.044974090539866; atol = 1e-12)),
-        (name = "The CIR short rate is not the one-period zero yield",
-            evaluate = () -> !isapprox(
-                price_implied_growth_rate(first_price, 1.0),
-                scenarios.short_rates[1,1]; atol = 1e-6)),
+        (name = "Price-implied growth rate uses the stated maturity",
+            evaluate = () -> isapprox(
+                price_implied_growth_rate(0.90, 2.0),
+                0.05268025782891314; atol = 1e-12)),
         (name = "Computed growth factor agrees with the frozen data",
             evaluate = () -> isapprox(
                 growth_factor(first_price), scenarios.growth_factors[1,1]; atol = 1e-10)),
@@ -55,16 +57,21 @@ function advanced_public_checks()::Vector{NamedTuple}
         (name = "Funded scenario has zero shortfall",
             evaluate = () -> iszero(shortfall(101_000.0, terms.liability))),
         (name = "Probability of fully funding the liability",
-            evaluate = () -> isapprox(summary().probability_funded, 0.40; atol = 1e-12)),
-        (name = "Mean terminal value",
             evaluate = () -> isapprox(
-                summary().mean_terminal_value, 99_455.9093414888; atol = 1e-6)),
+                funding_probability(sample_values, terms.liability), 2/3; atol = 1e-12)),
+        (name = "Complete roll calculation and funding summary",
+            evaluate = () -> begin
+                actual = summary();
+                isapprox(actual.probability_funded, 0.40; atol = 1e-12) &&
+                    isapprox(actual.mean_terminal_value, 99_455.9093414888; atol = 1e-6) &&
+                    isapprox(actual.mean_shortfall, 2_434.0430404689546; atol = 1e-6) &&
+                    isapprox(actual.maximum_shortfall, 10_120.487485199235; atol = 1e-6);
+            end),
         (name = "Mean funding shortfall",
             evaluate = () -> isapprox(
-                summary().mean_shortfall, 2_434.0430404689546; atol = 1e-6)),
+                mean_shortfall(sample_values, terms.liability), 10_000/3; atol = 1e-6)),
         (name = "Maximum funding shortfall",
             evaluate = () -> isapprox(
-                summary().maximum_shortfall, 10_120.487485199235; atol = 1e-6)),
+                maximum_shortfall(sample_values, terms.liability), 10_000.0; atol = 1e-6)),
     ];
 end
-

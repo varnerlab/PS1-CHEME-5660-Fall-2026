@@ -12,26 +12,40 @@ function standard_public_checks()::Vector{NamedTuple}
     bill_n = Int(terms.bill_compounding_frequency);
     note_n = Int(terms.note_compounding_frequency);
 
-    # Define reusable calculations; each public check invokes only the work it needs -
+    # Supply known inputs so unfinished upstream work does not erase formula credit -
+    reference_discounts = [0.9775171065493646^j for j ∈ 1:14];
+    reference_price = 97.92545962882491; # USD per 100 USD of par
+    reference_macaulay = 6.116505651686405; # years
+    reference_modified = 5.978988906829331; # years
+    reference_convexity = 41.817667688340755; # years squared
     bill_growth = () -> equivalent_growth_rate(terms.bill_yield, bill_n);
     bill_value = () -> bill_price(
         terms.bill_par, terms.bill_yield, bill_n, terms.bill_maturity);
     note_discounts = () -> discount_factors(
         terms.note_yield, note_n, schedule.payment_times);
-    note_value = () -> present_value(schedule.cashflows, note_discounts());
+    note_value = () -> present_value(schedule.cashflows, reference_discounts);
     macaulay = () -> macaulay_duration(
-        schedule.payment_times, schedule.cashflows, note_discounts(), note_value());
-    modified = () -> modified_duration(macaulay(), terms.note_yield, note_n);
+        schedule.payment_times, schedule.cashflows, reference_discounts, reference_price);
+    modified = () -> modified_duration(reference_macaulay, terms.note_yield, note_n);
     convexity_value = () -> convexity(
-        schedule.period_indices, schedule.cashflows, note_discounts(),
-        note_value(), terms.note_yield, note_n);
+        schedule.period_indices, schedule.cashflows, reference_discounts,
+        reference_price, terms.note_yield, note_n);
     estimated_fraction = () -> price_change_fraction(
-        modified(), convexity_value(), terms.yield_change);
-    exact_shocked_value = () -> present_value(
-        schedule.cashflows,
-        discount_factors(
-            terms.note_yield + terms.yield_change, note_n, schedule.payment_times),
-    );
+        reference_modified, reference_convexity, terms.yield_change);
+
+    # Reserve one check for the student's complete pricing and sensitivity calculation -
+    full_repricing_check = () -> begin
+        discounts = note_discounts();
+        price = present_value(schedule.cashflows, discounts);
+        duration = macaulay_duration(schedule.payment_times, schedule.cashflows, discounts, price);
+        sensitivity = modified_duration(duration, terms.note_yield, note_n);
+        curvature = convexity(schedule.period_indices, schedule.cashflows, discounts,
+            price, terms.note_yield, note_n);
+        estimate = price*(1 + price_change_fraction(sensitivity, curvature, terms.yield_change));
+        exact = present_value(schedule.cashflows, discount_factors(
+            terms.note_yield + terms.yield_change, note_n, schedule.payment_times));
+        abs(estimate - exact) < 0.01;
+    end;
 
     return [
         (name = "Equivalent continuously compounded growth rate",
@@ -41,8 +55,8 @@ function standard_public_checks()::Vector{NamedTuple}
         (name = "Bill price implies the equivalent growth rate",
             evaluate = () -> isapprox(
                 price_implied_growth_rate(
-                    bill_value(), terms.bill_par, terms.bill_maturity),
-                bill_growth(); atol = 1e-12)),
+                    97.56097560975611, terms.bill_par, terms.bill_maturity),
+                0.04938522518074283; atol = 1e-12)),
         (name = "Seven-year note has fourteen discount factors",
             evaluate = () -> length(note_discounts()) == 14),
         (name = "First note discount factor",
@@ -63,8 +77,6 @@ function standard_public_checks()::Vector{NamedTuple}
         (name = "A higher yield lowers the estimated note price",
             evaluate = () -> estimated_fraction() < 0),
         (name = "Approximation is within one cent of exact repricing",
-            evaluate = () -> abs(
-                note_value()*(1 + estimated_fraction()) - exact_shocked_value()) < 0.01),
+            evaluate = full_repricing_check),
     ];
 end
-

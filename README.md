@@ -1,4 +1,4 @@
-# PS1: Fund a Known Future Outlay with U.S. Treasury Securities
+# PS1: Treasury Valuation, Interest-Rate Risk, and Funding a Future Obligation
 
 Problem Set 1 asks you to value Treasury cash flows and reason about interest-rate risk using the time-value-of-money tools from L1b and the Treasury pricing and yield-curve tools from week 2. This is a finance assignment implemented in a small amount of Julia; it is not a Julia programming assignment.
 
@@ -6,17 +6,22 @@ Problem Set 1 asks you to value Treasury cash flows and reason about interest-ra
 
 After completing your chosen track, you should be able to:
 
-1. Convert Treasury prices, yields, growth rates, and discount factors under a stated convention.
-2. Value dated Treasury cash flows and connect their timing to interest-rate exposure.
-3. Evaluate whether a Treasury strategy funds a known future cash outlay under the assumptions of the model.
+| Objective | Standard track | Advanced track |
+|:--|:--|:--|
+| 1. Interpret rate conventions | Convert nominal yields to equivalent continuous rates and value a Treasury bill. | Distinguish a short rate from a price-implied zero yield and investment growth factor. |
+| 2. Connect cash flows to risk | Price a coupon note and measure its duration and convexity. | Compare an exact-maturity lock with reinvestment through shorter positions. |
+| 3. Evaluate numerical evidence | Compare approximate and exact repricing after a yield shock. | Interpret funding outcomes and recommend a strategy under stated model assumptions. |
 
 ## Logistics
 
 - **Release:** Sunday, September 6, 2026.
 - **Due:** Sunday, September 20, 2026 at 11:59 PM ET as a ZIP archive uploaded to Canvas.
-- **Choose one track:** Complete either the Standard track or the Advanced track. Both tracks receive an ordinary score on the course's 0-to-4 scale.
-- **Advanced Magic Point:** A score of 4 on the Advanced track earns one Magic Point in addition to the PS1 score. Scores below 4 do not earn the Magic Point.
-- **Revisions:** You must make a qualifying submission by the deadline to enter the revision process. A missing submission receives a Frozen Zero and cannot be raised through revision or Magic Points.
+- **Choose one track:** Complete either Standard or Advanced. Both have a maximum ordinary score of 4; only your selected track is graded.
+- **Advanced Magic Point:** An accepted score of 4 on Advanced earns one Magic Point, including a 4 earned through an eligible revision. This bonus is awarded once for PS1.
+- **Initial submission:** Submit your current work by the deadline even if it is incomplete or the tests fail. A qualifying submission is a readable ZIP containing the assignment and your attempted work. An empty placeholder or unreadable archive does not qualify. A missing qualifying submission receives a Frozen Zero and is ineligible for revisions or Magic Points.
+- **Infinite revisions:** After the initial deadline, eligible students may revise as many times as they like through the end of the semester. Submit each revision using **New Attempt on the same PS1 Canvas assignment**. Canvas may label revisions late; this creates no penalty under the revision policy. Every revision is graded, and the highest score earned is retained.
+- **Reference solution:** The reference solution will be released after the initial deadline. Use it to understand mistakes and debug your work, but do not copy it. Your implementation and written explanations must remain your own work. Copying the reference solution results in a score of 0 for the assignment.
+- **Group and AI policy:** Submit independent work. You may discuss ideas with classmates, but may not directly share code or solutions. You may use Julia documentation, AI tools, and internet resources; you remain responsible for understanding and explaining everything you submit.
 
 ## This is not a Julia programming assignment
 
@@ -31,50 +36,58 @@ You do **not** need to:
 - implement or calibrate CIR; or
 - create a notebook.
 
-Edit only the source and finance-response files for your chosen track:
+Set your selection in `TRACK.txt`, then edit the source and finance-response files for your chosen track:
 
 - Standard: `src/Standard.jl` and `responses/Standard.md`
 - Advanced: `src/Advanced.jl` and `responses/Advanced.md`
 
-Do not edit `src/Support.jl`, the data, or the public tests.
+Keep any additional solution helpers inside `src`. Do not edit `src/Support.jl`, the data, public tests, reports, or checkers to make an incomplete solution appear to pass. Replace each placeholder error with your expression and remove or update its completed `TODO` comment; keep the function docstrings.
 
 ## Getting started
 
-From the problem-set directory, instantiate the supplied Julia environment:
+This assignment is supported with **Julia 1.12.7** and uses only Julia standard libraries.
+
+1. Open the [PS1 Releases page](https://github.com/varnerlab/PS1-CHEME-5660-Fall-2026/releases) and select the tagged PS1 release announced on Canvas.
+2. Under **Assets**, download **Source code (zip)**. Extract the archive completely, then open the extracted folder in VS Code. This is the folder containing `README.md`, `Project.toml`, and `check_submission.jl`.
+3. Open a terminal in that folder and prepare the supplied environment:
+
+   ```text
+   julia --project=. -e 'using Pkg; Pkg.instantiate()'
+   ```
+
+4. Put exactly `standard` or `advanced` in `TRACK.txt` and complete the selected source and response files.
+5. Check your progress:
+
+   ```text
+   julia --project=. --startup-file=no check_submission.jl
+   ```
+
+The starter code intentionally contains `TODO` comments and placeholder errors. **The public tests are expected to fail before you begin.** A failure message identifies work still to do; a setup or syntax error is reported separately.
+
+You can also run the selected test suite directly:
 
 ```text
-julia --project=. -e 'using Pkg; Pkg.instantiate()'
+julia --project=. --startup-file=no testme_standard.jl
+julia --project=. --startup-file=no testme_advanced.jl
 ```
 
-Put exactly one word in `TRACK.txt`:
+Run only the line for your chosen track. Individual formula checks use supplied inputs so unfinished upstream calculations do not erase credit for other formulas. Each track also includes a check of the complete calculation. See [RUBRIC.md](RUBRIC.md) for the exact scoring procedure.
+
+## Displaying your results
+
+Run this command to display the numerical results needed for your three written responses:
 
 ```text
-standard
+julia --project=. --startup-file=no report_results.jl
 ```
 
-or
+It reads `TRACK.txt`, calls your functions, and prints labeled values with units. For partial solutions, available results are displayed and calculations that cannot run are labeled `UNAVAILABLE`. The report shows your calculations; use the public tests to check their correctness. You do not need to write a separate driver or extract values from the test files.
 
-```text
-advanced
-```
+In the selected response file, replace each placeholder with two to four sentences. Keep the `<!-- answer-N:start -->` and `<!-- answer-N:end -->` markers around each answer. The checker uses these markers to detect empty or missing answers; the teaching team reviews their substance. Report prices in USD and rates as percentages. Keep at least four decimal places when comparing the small Standard repricing error.
 
-Run the tests for your selected track:
+## The setting
 
-```text
-julia --project=. testme_standard.jl
-```
-
-or
-
-```text
-julia --project=. testme_advanced.jl
-```
-
-Every public test is evaluated independently. This allows a partially completed solution to receive credit even when a different function produces an error.
-
-## The common setting
-
-A firm knows that it must make a fixed payment seven periods from today. Treasury securities can be used either to match the payment date or to reinvest through a sequence of shorter positions. The two tracks examine this setting at different levels.
+Treasury cash flows support two related investigations. Standard prices a six-month bill and a seven-year coupon note, then measures the note's sensitivity to a yield change. Advanced considers a firm that owes a fixed payment in seven years and compares locking in that payment with rolling shorter investments.
 
 ## Standard track: price and measure interest-rate exposure
 
@@ -96,7 +109,7 @@ $$
 L=\$100{,}000
 $$
 
-at the end of period 7. Compare two strategies that use the same initial capital.
+at the end of period 7. Each period is one classroom year. Compare two strategies that use the same initial capital. Assume timely promised payments, divisible positions, and no taxes or transaction costs.
 
 ### Lock strategy
 
@@ -130,7 +143,7 @@ $$
 \text{shortfall}^{(s)}=\max\left(L-W_7^{(s)},0\right).
 $$
 
-Then summarize the probability of full funding, mean terminal value, mean shortfall, and maximum shortfall.
+Then summarize the fraction of the 40 equally weighted scenarios that fully fund the liability, mean terminal value, mean shortfall across all scenarios, and maximum observed shortfall. Here, “funding probability” means this scenario fraction. It is not a real-world forecast; the maximum observed shortfall is not a bound on every possible loss.
 
 After the calculations work, complete the three short interpretations and recommendation in `responses/Advanced.md`.
 
@@ -158,32 +171,25 @@ These are synthetic model-implied Treasury rates, not predictions of future auct
 
 ## Scoring
 
-The score is determined from the complete collection of individual public tests, followed by a documentation and task-completion check:
+The grading rubric matches the course's 0-to-4 policy. Standard has **13 public checks** and Advanced has **16**. Passing strictly more than half earns a 2 when some checks still fail. All checks must pass for a 3 or 4; a 4 additionally requires accepted documentation, implementation, and all three finance responses. Only the selected track's work is subject to completion review.
 
-| Score | Condition |
-|:--:|:--|
-| 0 | You submitted something, but the tests did not run or every test failed. |
-| 1 | The tests ran and at least one succeeded, but no more than half succeeded. |
-| 2 | The tests ran and strictly more than half succeeded, but at least one failed. |
-| 3 | Every test succeeded, but documentation or another required task was incomplete. |
-| 4 | Every test succeeded, the required functions remained documented, and all tasks—including the selected finance response—were completed. |
+The local checker reports feedback, not an official grade. When all numerical checks pass, the result is **pending completion review**. A final 3 means an applicable requirement was actually found incomplete or unacceptable; it is not the default while grading is pending. See [RUBRIC.md](RUBRIC.md) for the full score table and official grading procedure.
 
-For clarity, “most tests succeeded” means strictly more than half: at least 7 of 13 Standard tests or at least 9 of 16 Advanced tests. Passing all numerical tests is necessary for a 3 or 4. The teaching team reviews the quality of the documentation and finance responses before assigning a final score of 4.
+## Checking and submitting your work
 
-A missing submission is different from a rubric score of 0: it becomes a Frozen Zero and is not eligible for revision or Magic Points. A partial solution is therefore worth submitting.
-
-An Advanced-track score of 4 earns one Magic Point. No other Advanced-track score earns the bonus.
-
-## Submitting your work
-
-When you are done, or as far as you got, run:
+Run:
 
 ```text
-julia --project=. --startup-file=no submit.jl
+julia --project=. --startup-file=no check_submission.jl
 ```
 
-The script reads `TRACK.txt`, evaluates every public test, checks the selected response file and function documentation, reports a provisional rubric score, and writes `MANIFEST.txt`. Then:
+The checker runs the selected public tests, checks for docstrings and text in all three answer blocks, and creates `MANIFEST.txt` with source and response fingerprints.
 
-1. Zip the complete problem-set folder.
-2. Rename the archive `PS1-<your netid>.zip`.
-3. Upload it to the PS1 assignment on Canvas.
+**This script does not connect to Canvas or upload your work.** If checks need attention, fix as much as you can and rerun it. Submit your current readable work before the deadline even if some tests fail or cannot run, so you preserve eligibility for revisions.
+
+1. Zip the entire extracted problem-set folder, including `TRACK.txt`, `src`, `responses`, `data`, and the generated `MANIFEST.txt`.
+   - macOS: right-click the folder in Finder and choose **Compress**.
+   - Windows: right-click the folder and choose **Send to → Compressed (zipped) folder**.
+2. Rename the ZIP to `CHEME-5660-PS1-<your netid>.zip`. Replace the entire `<your netid>` placeholder, including angle brackets, with your actual NetID. For example: `CHEME-5660-PS1-abc123.zip`.
+3. Upload the ZIP to the PS1 assignment on Canvas by the initial deadline.
+4. For an eligible revision, rerun the checker, create an updated ZIP, and use **New Attempt** on that same Canvas assignment. Revisions remain available through the end of the semester; the highest score is retained.

@@ -77,11 +77,20 @@ end
 """
     response_is_complete(path::String) -> Bool
 
-Return `true` when the selected finance-response file exists and contains no `TODO:`
-markers. The teaching team reviews the substance of the responses before assigning a 4.
+Return `true` when all three marked answer blocks contain text and no TODO markers.
+This checks structure only; the teaching team reviews the substance of each answer.
 """
 function response_is_complete(path::String)::Bool
-    return isfile(path) && !occursin("TODO:", read(path, String));
+    isfile(path) || return false;
+    text = read(path, String);
+    return all(1:3) do index
+        pattern = Regex("<!-- answer-$(index):start -->(.*?)<!-- answer-$(index):end -->", "s");
+        blocks = collect(eachmatch(pattern, text));
+        length(blocks) == 1 || return false;
+        answer = strip(replace(blocks[1].captures[1], r"<!--.*?-->"s => ""));
+        !isempty(answer) && occursin(r"[\p{L}\p{N}]", answer) &&
+            !occursin(r"\bTODO\b"i, answer);
+    end;
 end
 
 
@@ -89,8 +98,8 @@ end
     rubric_score(results; tests_ran, completion) -> Int
 
 Apply the course 0-to-4 rubric. "Most" means strictly more than half of the public tests.
-The returned score is provisional when `completion=true`; the teaching team still checks
-the quality of the documentation and finance responses.
+Set `completion=true` only after the teaching team accepts all applicable requirements.
+The local checker reports pending review when all numerical checks pass.
 """
 function rubric_score(results::AbstractVector{<:NamedTuple};
     tests_ran::Bool, completion::Bool)::Int
