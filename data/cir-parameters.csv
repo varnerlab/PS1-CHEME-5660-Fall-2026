@@ -1,0 +1,9 @@
+parameter,value,description
+seed,5660,random-number seed
+scenario_count,40,number of frozen paths
+period_count,7,one-year roll periods
+steps_per_period,52,Euler steps per period
+initial_short_rate,0.045,decimal annual rate
+kappa,0.45,mean-reversion speed
+theta,0.04,long-run short-rate level
+sigma,0.08,short-rate volatility

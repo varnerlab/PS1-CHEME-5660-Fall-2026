@@ -1,0 +1,7 @@
+.DS_Store
+MANIFEST.txt
+
+# Instructor-only material is kept locally and is not part of the student release -
+instructor/
+solution/
+
