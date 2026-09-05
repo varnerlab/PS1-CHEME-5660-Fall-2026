@@ -1,6 +1,6 @@
 # PS1 Advanced-Track Finance Response
 
-Answer each prompt in two to four sentences. Replace every `TODO:` marker with your response. Report rates as percentages and monetary values in USD with appropriate precision.
+Answer each prompt in two to four sentences. Replace each response placeholder below. Report rates as percentages and monetary values in USD with appropriate precision.
 
 ## 1. Short rate versus investment return
 
@@ -19,4 +19,3 @@ TODO: Write your response here.
 The firm treats the \$100,000 payment as a hard obligation and has not authorized external borrowing at period 7. Recommend Lock or Roll and support the recommendation using the scenario results. Also identify one reason a decision-maker might nevertheless prefer the other strategy.
 
 TODO: Write your response here.
-

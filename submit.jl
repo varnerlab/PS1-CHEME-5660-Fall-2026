@@ -67,8 +67,12 @@ function main()
             digest = bytes2hex(open(sha256, file));
             println(io, digest, "  src/", basename(file));
         end
-        digest = bytes2hex(open(sha256, response_path));
-        println(io, digest, "  responses/", basename(response_path));
+        if isfile(response_path)
+            digest = bytes2hex(open(sha256, response_path));
+            println(io, digest, "  responses/", basename(response_path));
+        else
+            println(io, "MISSING  responses/", basename(response_path));
+        end
     end
 
     # Display the provisional rubric result and packaging instructions -

@@ -1,6 +1,6 @@
 # PS1 Standard-Track Finance Response
 
-Answer each prompt in two to four sentences. Replace every `TODO:` marker with your response. Report rates as percentages and monetary values in USD with appropriate precision.
+Answer each prompt in two to four sentences. Replace each response placeholder below. Report rates as percentages and monetary values in USD with appropriate precision.
 
 ## 1. Prices and rate conventions
 
@@ -19,4 +19,3 @@ TODO: Write your response here.
 State the dollar difference between exact repricing and the duration-convexity approximation per \$100 of par. Explain why the approximation is close but not exact.
 
 TODO: Write your response here.
-
