@@ -1,8 +1,9 @@
 .DS_Store
 MANIFEST.txt
 
-# Instructor-only material is kept locally and is not part of the student release -
-instructor/
+# Publish only the Canvas assignment text; keep other instructor material local -
+instructor/*
+!instructor/canvas-assignment-description.html
 solution/
 needed-edits.md
 
