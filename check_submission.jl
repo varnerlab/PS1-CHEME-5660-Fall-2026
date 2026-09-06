@@ -82,7 +82,7 @@ Run the selected checks, display financial results, and write MANIFEST.txt.
 All-passing numerical work remains pending human completion review; this is local feedback.
 """
 function main()::Nothing
-    # Evaluate each check, including failures caused by an unfinished formula -
+    # Evaluate each check, including failures caused by an unfinished task -
     track = _CHECK_SETUP.track;
     tests_ran = _CHECK_SOURCE.tests_ran;
     results = tests_ran ? evaluate_public_checks(_CHECK_SETUP.checks) :

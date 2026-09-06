@@ -1,138 +1,107 @@
 # PS1 Advanced Track
 #
-# Complete only the expressions marked TODO. CIR simulation, file input, and scenario
-# iteration are supplied so the work remains focused on funding the future obligation.
+# Use the package calls from the L2a Treasury pricing examples and the L2b
+# sensitivity example. Complete the valuation tasks and the funding comparison below.
 
 """
-    price_implied_growth_rate(zero_price::Real, T::Real) -> Float64
+    build_bill(terms::NamedTuple) -> MyUSTreasuryZeroCouponBondModel
 
-Return the price-implied annualized log growth rate `g_B` from L2a, given a price
-per dollar of maturity value and a remaining holding time `T` in years:
+Build and price the bill using `build` and `DiscreteCompoundingModel` from
+VLQuantitativeFinancePackage. Return the priced model, including its `price` field.
 
-    g_B = log(1/P)/T = -log(P)/T
+Follow L2a's "Pricing Zero-Coupon Treasury Bills Using NPV", Task 1. Use these
+entries from the supplied `terms` record to populate the package's model fields:
 
-This equals L1b's benchmark `g_y = 2*log(1 + y/2)` only when `P` is the
-zero-NPV model price at the chosen valuation yield `y` under `n = 2`.
+| Model field | Supplied value | Meaning |
+|:--|:--|:--|
+| `par` | `terms.bill_par` | maturity payment in USD |
+| `rate` | `terms.bill_yield` | nominal annual yield as a decimal |
+| `T` | `terms.bill_maturity` | years to maturity |
+| `n` | `Int(terms.bill_compounding_frequency)` | compounding periods per year |
+
+Call `build(MyUSTreasuryZeroCouponBondModel, (...))` with these named fields,
+then pipe the model into `DiscreteCompoundingModel()` with `|>` and return it.
+The supplied yield already uses the nominal-yield convention needed by the model.
 """
-function price_implied_growth_rate(zero_price::Real, T::Real)::Float64
-    # TODO: Translate the displayed equation into one Julia expression.
-    throw("price_implied_growth_rate is not implemented yet");
+function build_bill(terms::NamedTuple)::MyUSTreasuryZeroCouponBondModel
+    # TODO: Build the bill from the supplied terms, price it, and return the model.
+    throw("build_bill is not implemented yet");
 end
 
 """
-    affordable_lots(cash::Real, price_per_lot::Real) -> Int
+    build_note(terms::NamedTuple) -> MyUSTreasuryCouponSecurityModel
 
-Return the number of whole lots affordable without borrowing. Inputs are available
-cash and the purchase price of one 10,000 USD-par lot, both in USD:
+Build and price the note using the same package calls as L2a's "The Pricing of
+United States Treasury Coupon-Bearing Notes and Bonds", Task 1, and L2b's
+"Sensitivity of Coupon Treasury Notes and Bonds", Task 1.
 
-    lots = floor(cash/price_per_lot)
+| Model field | Supplied value | Meaning |
+|:--|:--|:--|
+| `par` | `terms.note_par` | maturity principal in USD |
+| `rate` | `terms.note_yield` | nominal annual yield as a decimal |
+| `coupon` | `terms.note_coupon_rate` | fixed annual coupon rate as a decimal |
+| `T` | `terms.note_maturity` | years to maturity |
+| `λ` | `Int(terms.note_compounding_frequency)` | coupon payments per year |
 
-Assume cash >= 0 and price_per_lot > 0. Use `floor(Int, ...)` to return an integer.
+Call `build(MyUSTreasuryCouponSecurityModel, (...))` with these named fields,
+then pipe the model into `DiscreteCompoundingModel()` with `|>` and return it.
+Julia's `λ` can be entered by typing `\\lambda` and pressing Tab.
+The package constructs the cash-flow schedule and computes the price.
 """
-function affordable_lots(cash::Real, price_per_lot::Real)::Int
-    # TODO: Round the affordable number of lots down to an integer.
-    throw("affordable_lots is not implemented yet");
+function build_note(terms::NamedTuple)::MyUSTreasuryCouponSecurityModel
+    # TODO: Build the note from the supplied terms, price it, and return the model.
+    throw("build_note is not implemented yet");
 end
 
 """
-    uninvested_cash(cash::Real, lots::Integer, price_per_lot::Real) -> Float64
+    reprice_note(note::MyUSTreasuryCouponSecurityModel, yield_change::Real)
+        -> MyUSTreasuryCouponSecurityModel
 
-Return the cash remaining after purchasing `lots` whole lots, in USD:
+Return a repriced copy of `note` after adding `yield_change` to its nominal annual
+yield. Follow the L2b sensitivity example's use of `deepcopy`, a changed `rate`,
+and the discrete-compounding pricing call.
 
-    remainder = cash - lots*price_per_lot
+Create a copy with `deepcopy(note)`, add `yield_change` to the copy's `rate`,
+then pipe the copy into `DiscreteCompoundingModel()` and return it.
+Keep the original model unchanged so its price remains available for comparison.
+The coupon rate, par, maturity, and coupon frequency stay fixed.
 
-The supplied engine passes a nonnegative, affordable lot count. Residual cash earns zero.
+The supplied change is an addition of 0.005: 4.60% becomes 5.10%.
+All inputs use decimal annual rates. The return value is the complete priced model.
 """
-function uninvested_cash(cash::Real, lots::Integer, price_per_lot::Real)::Float64
-    # TODO: Subtract the total purchase cost from the available cash.
-    throw("uninvested_cash is not implemented yet");
+function reprice_note(note::MyUSTreasuryCouponSecurityModel,
+    yield_change::Real)::MyUSTreasuryCouponSecurityModel
+    # TODO: Copy the note, add the yield change, reprice the copy, and return it.
+    throw("reprice_note is not implemented yet");
 end
 
 """
-    coupon_payment(par::Real, coupon_rate::Real, n::Integer) -> Float64
+    compare_strategies(market::NamedTuple, terms::NamedTuple) -> Vector{NamedTuple}
 
-Return one coupon payment in USD on the total held par amount, following L2a:
+Compare four investments using the supplied `evaluate_sequences` function.
+`market` is the supplied set of 40 price futures. `terms` contains the available
+budget, liability, lot size, coupon terms, horizon, and STRIP price from
+`data/advanced-terms.csv`. File loading is supplied by the checker.
 
-    C = par*coupon_rate/n
+Represent the four strategies as vectors of holding times in years:
+`[7]`, `[2, 5]`, `[5, 2]`, and `[1, 1, 1, 1, 1, 1, 1]`.
+Call `evaluate_sequences(market, terms; sequences=choices)`, where `choices`
+contains those four vectors, and return its result unchanged.
 
-Here coupon_rate is a decimal annual coupon rate and n = 2 payments per year.
+The supplied function handles purchases, coupon reinvestment, and funding
+statistics. It also adds `STRIP7`, which requires an additional contribution
+today. Each row reports `initial_capital` and `additional_contribution` in USD,
+40 `terminal_values` in USD, and a `summary` containing `probability_funded`,
+`mean_terminal_value`, `mean_shortfall`, and `maximum_shortfall`.
+The funded fraction counts equality as funded. Mean shortfall includes zeros
+for funded futures. A nonempty `detail` field describes an unavailable result.
+
+Use the results to explain the funding tradeoff in responses/Advanced.md.
+The supplied futures are a common comparison sample, not known future prices
+or calibrated probabilities. No simulation or statistical routines need to be
+implemented here. Invalid terms or sequences are reported by the supplied helper.
 """
-function coupon_payment(par::Real, coupon_rate::Real, n::Integer)::Float64
-    # TODO: Translate the displayed coupon equation into one expression.
-    throw("coupon_payment is not implemented yet");
+function compare_strategies(market::NamedTuple, terms::NamedTuple)::Vector{NamedTuple}
+    # TODO: Pass the four strategy vectors to evaluate_sequences and return its results.
+    throw("compare_strategies is not implemented yet");
 end
-
-"""
-    funding_ratio(terminal_value::Real, liability::Real) -> Float64
-
-Return terminal wealth per dollar of required outlay:
-
-    funding ratio = W_7/L
-"""
-function funding_ratio(terminal_value::Real, liability::Real)::Float64
-    # TODO: Translate the displayed equation into one Julia expression.
-    throw("funding_ratio is not implemented yet");
-end
-
-"""
-    shortfall(terminal_value::Real, liability::Real) -> Float64
-
-Return the unfunded amount, with a floor of zero:
-
-    shortfall = max(L - W_7, 0)
-"""
-function shortfall(terminal_value::Real, liability::Real)::Float64
-    # TODO: Translate the displayed equation into one Julia expression.
-    throw("shortfall is not implemented yet");
-end
-
-"""
-    funding_probability(terminal_values::AbstractVector, liability::Real) -> Float64
-
-Return the fraction of scenarios in which terminal wealth meets or exceeds the liability.
-"""
-function funding_probability(terminal_values::AbstractVector,
-    liability::Real)::Float64
-    # TODO: Count funded scenarios and divide by the total number of scenarios.
-    throw("funding_probability is not implemented yet");
-end
-
-"""
-    mean_shortfall(terminal_values::AbstractVector, liability::Real) -> Float64
-
-Return the average shortfall across all scenarios, treating funded scenarios as zero.
-"""
-function mean_shortfall(terminal_values::AbstractVector,
-    liability::Real)::Float64
-    # TODO: Apply `shortfall` to every terminal value and take the mean.
-    throw("mean_shortfall is not implemented yet");
-end
-
-"""
-    maximum_shortfall(terminal_values::AbstractVector, liability::Real) -> Float64
-
-Return the largest shortfall observed across the supplied scenarios.
-"""
-function maximum_shortfall(terminal_values::AbstractVector,
-    liability::Real)::Float64
-    # TODO: Apply `shortfall` to every terminal value and take the maximum.
-    throw("maximum_shortfall is not implemented yet");
-end
-
-"""
-    funding_summary(terminal_values::AbstractVector, liability::Real) -> NamedTuple
-
-Assemble the required funding-risk statistics. This orchestration code is supplied;
-students implement the finance calculations called here.
-"""
-function funding_summary(terminal_values::AbstractVector,
-    liability::Real)::NamedTuple
-
-    return (
-        probability_funded = funding_probability(terminal_values, liability),
-        mean_terminal_value = mean(terminal_values),
-        mean_shortfall = mean_shortfall(terminal_values, liability),
-        maximum_shortfall = maximum_shortfall(terminal_values, liability),
-    );
-end
-

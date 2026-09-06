@@ -3,7 +3,10 @@ const _ROOT = @__DIR__;
 const _PATH_TO_SRC = joinpath(_ROOT, "src");
 const _PATH_TO_DATA = joinpath(_ROOT, "data");
 
-# Load the standard-library tools used by the supplied support and test code -
+# Load the course package and the tools used by the support and test code -
+import VLQuantitativeFinancePackage # qualified strip(...) avoids the Base.strip name conflict
+using VLQuantitativeFinancePackage: build, DiscreteCompoundingModel,
+    MyUSTreasuryZeroCouponBondModel, MyUSTreasuryCouponSecurityModel # L2a/L2b pricing API
 using Statistics # summary statistics for the Advanced funding scenarios
 using Test       # public tests for both tracks
 

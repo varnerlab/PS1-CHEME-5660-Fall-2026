@@ -1,26 +1,26 @@
 # PS1 Advanced-Track Discussion Questions
 
-Replace each placeholder, keeping the surrounding HTML answer markers. `check_submission.jl` displays your computed values and writes the strategy comparison under `results/`. Use two to four explanatory sentences per discussion question; a compact table of numerical results may accompany your sentences. Report rates as percentages and monetary values in USD with sensible precision.
+Replace each placeholder, keeping the surrounding HTML answer markers. Answer in a few sentences with compact tables where useful. Report monetary values in USD and rates as percentages. The checker displays the valuation results and saves the funding comparison in `results/advanced-strategies.csv`. The file `results/advanced-scenario-outcomes.csv` contains individual futures. Matching `scenario_id` values identify the same future across strategies.
 
-## 1. Same maturity, different cash flows
+## 1. Valuation and interest-rate risk
 
-Compare `STRIP7` and `N7` using the common starting budget. Report the initial budget, the par amount purchased by each, the cash remaining immediately after the main `N7` purchase, and the note's semiannual coupon payment. Explain why a seven-year maturity alone does not establish that `N7` will fund the $100,000 obligation. Describe what happens to its coupons and residual cash under the supplied rule.
+Report the six-month bill price and its equivalent continuously compounded annual rate, the seven-year note price before and after the 50-basis-point yield increase, and the duration-convexity estimate of the repriced note. Give exact price minus estimated price with enough precision to show the difference. Explain why the note's price changes while its coupon stays fixed, and why the approximation is close but not exact. These results use `data/standard-terms.csv`.
 
 <!-- answer-1:start -->
 TODO: Write your response here.
 <!-- answer-1:end -->
 
-## 2. Compare the permitted sequences
+## 2. Funding with the available budget
 
-Among the 50 main sequences (excluding `STRIP7`), identify a sequence with the highest funded fraction and a sequence with the lowest mean shortfall. If there is a tie, choose any tied sequence. For each, report its label, funded count out of 40, mean terminal wealth, mean shortfall, and maximum observed shortfall. Explain the trade-off between these two measures of funding risk. Use matching scenario IDs if you compare individual futures.
+The firm has USD 74,000 and owes USD 100,000 at year 7. Compare `N7`, `N2-N5`, `N5-N2`, and `B1-B1-B1-B1-B1-B1-B1`. For each, report the funded count out of 40, mean final wealth, mean shortfall, and maximum shortfall. Identify which has the highest funded count and which has the lowest mean shortfall. Explain why those measures can favor different choices. Use `N2-N5` and `N5-N2` to explain how purchase timing and coupon reinvestment affect outcomes, even though both sequences last seven years.
 
 <!-- answer-2:start -->
 TODO: Write your response here.
 <!-- answer-2:end -->
 
-## 3. Recommendation and limits of the evidence
+## 3. Contribute more today or accept funding risk?
 
-The firm treats the $100,000 payment as a hard obligation and has not authorized borrowing or additional contributions. Recommend the STRIP or a permitted sequence using the results, and identify a reason an investor with greater tolerance for deficits might prefer an alternative. Explain why a sequence must be selected before knowing which future occurs, and give one limitation of interpreting the 40 simulated futures as evidence about real-world funding reliability.
+Report the initial cost of the fully funded `STRIP7` and the additional contribution it requires beyond USD 74,000. Recommend whether the firm should make that contribution or invest its available budget in one of the four sequences. Support your recommendation with both funding frequency and shortfall size, explaining the consequence of missing a required payment. If the firm cannot contribute more today, identify the sequence you would choose and the risk you would be accepting. Give one limitation of using the 40 simulated futures as evidence about real-world funding reliability.
 
 <!-- answer-3:start -->
 TODO: Write your response here.

@@ -1,5 +1,5 @@
-include("Include.jl"); # supplied paths, support functions, Statistics, and Test
-include(joinpath(_PATH_TO_SRC, "Standard.jl")); # student Standard-track expressions
+include("Include.jl"); # course package, supplied paths, support functions, and Test
+include(joinpath(_PATH_TO_SRC, "Standard.jl")); # student Standard-track package calls
 include(joinpath(_ROOT, "test", "Rubric.jl")); # independent-check evaluator
 include(joinpath(_ROOT, "test", "public_standard_tests.jl")); # public checks
 

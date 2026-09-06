@@ -122,26 +122,14 @@ end
 
 
 const STANDARD_DOCUMENTED_FUNCTIONS = [
-    :equivalent_growth_rate,
-    :bill_price,
-    :price_implied_growth_rate,
-    :discount_factors,
-    :present_value,
-    :macaulay_duration,
-    :modified_duration,
-    :convexity,
-    :price_change_fraction,
+    :build_bill,
+    :build_note,
+    :reprice_note,
 ];
 
 const ADVANCED_DOCUMENTED_FUNCTIONS = [
-    :price_implied_growth_rate,
-    :affordable_lots,
-    :uninvested_cash,
-    :coupon_payment,
-    :funding_ratio,
-    :shortfall,
-    :funding_probability,
-    :mean_shortfall,
-    :maximum_shortfall,
-    :funding_summary,
+    :build_bill,
+    :build_note,
+    :reprice_note,
+    :compare_strategies,
 ];

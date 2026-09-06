@@ -1,82 +1,91 @@
 """
     standard_public_checks() -> Vector{NamedTuple}
 
-Return the individual public checks for the Standard track. Each check is evaluated
-independently so the rubric can count successful tests even when another function errors.
+Return thirteen checks of the student's bill, note, and repricing tasks.
+Repricing checks use a supplied package model so unfinished construction tasks
+retain independent credit. Each result has a name and a deferred Boolean check.
 """
 function standard_public_checks()::Vector{NamedTuple}
-
-    # Load the controlled security terms and supplied note schedule -
     terms = load_numeric_record(joinpath(_PATH_TO_DATA, "standard-terms.csv"));
-    schedule = note_cashflows(terms);
-    bill_n = Int(terms.bill_compounding_frequency);
-    note_n = Int(terms.note_compounding_frequency);
+    bill = () -> build_bill(terms);
+    note = () -> build_note(terms);
 
-    # Supply known inputs so unfinished upstream work does not erase formula credit -
-    reference_discounts = [0.9775171065493646^j for j ∈ 1:14];
-    reference_price = 97.92545962882491; # USD per 100 USD of par
-    reference_macaulay = 6.116505651686405; # years
-    reference_modified = 5.978988906829331; # years
-    reference_convexity = 41.817667688340755; # years squared
-    bill_growth = () -> equivalent_growth_rate(terms.bill_yield, bill_n);
-    bill_value = () -> bill_price(
-        terms.bill_par, terms.bill_yield, bill_n, terms.bill_maturity);
-    note_discounts = () -> discount_factors(
-        terms.note_yield, note_n, schedule.payment_times);
-    note_value = () -> present_value(schedule.cashflows, reference_discounts);
-    macaulay = () -> macaulay_duration(
-        schedule.payment_times, schedule.cashflows, reference_discounts, reference_price);
-    modified = () -> modified_duration(reference_macaulay, terms.note_yield, note_n);
-    convexity_value = () -> convexity(
-        schedule.period_indices, schedule.cashflows, reference_discounts,
-        reference_price, terms.note_yield, note_n);
-    estimated_fraction = () -> price_change_fraction(
-        reference_modified, reference_convexity, terms.yield_change);
+    # Supply a fresh priced note for each independent repricing check -
+    reference_note = () -> build(MyUSTreasuryCouponSecurityModel, (
+        par=terms.note_par, rate=terms.note_yield, coupon=terms.note_coupon_rate,
+        T=terms.note_maturity, λ=Int(terms.note_compounding_frequency),
+    )) |> DiscreteCompoundingModel();
+    repriced = () -> reprice_note(reference_note(), terms.yield_change);
 
-    # Reserve one check for the student's complete pricing and sensitivity calculation -
-    full_repricing_check = () -> begin
-        discounts = note_discounts();
-        price = present_value(schedule.cashflows, discounts);
-        duration = macaulay_duration(schedule.payment_times, schedule.cashflows, discounts, price);
-        sensitivity = modified_duration(duration, terms.note_yield, note_n);
-        curvature = convexity(schedule.period_indices, schedule.cashflows, discounts,
-            price, terms.note_yield, note_n);
-        estimate = price*(1 + price_change_fraction(sensitivity, curvature, terms.yield_change));
-        exact = present_value(schedule.cashflows, discount_factors(
-            terms.note_yield + terms.yield_change, note_n, schedule.payment_times));
-        abs(estimate - exact) < 0.01;
+    # Check the entire student workflow once all three tasks can run -
+    full_workflow = () -> begin
+        b = bill();
+        original = note();
+        changed = reprice_note(original, terms.yield_change);
+        estimate = original.price*(1 + standard_price_change(original, terms.yield_change));
+        isapprox(b.price, 97.56097560975611; atol=1e-10) &&
+            isapprox(original.price, 97.92545962882491; atol=1e-10) &&
+            isapprox(changed.price, 95.04852622680231; atol=1e-9) &&
+            abs(estimate - changed.price) < 0.01;
     end;
 
     return [
-        (name = "Equivalent continuously compounded growth rate",
-            evaluate = () -> isapprox(bill_growth(), 0.04938522518074283; atol = 1e-12)),
-        (name = "Six-month Treasury bill price",
-            evaluate = () -> isapprox(bill_value(), 97.56097560975611; atol = 1e-10)),
-        (name = "Bill price implies the equivalent growth rate",
-            evaluate = () -> isapprox(
-                price_implied_growth_rate(
-                    97.56097560975611, terms.bill_par, terms.bill_maturity),
-                0.04938522518074283; atol = 1e-12)),
-        (name = "Seven-year note has fourteen discount factors",
-            evaluate = () -> length(note_discounts()) == 14),
-        (name = "First note discount factor",
-            evaluate = () -> isapprox(note_discounts()[1], 0.9775171065493646; atol = 1e-12)),
-        (name = "Maturity-date note discount factor",
-            evaluate = () -> isapprox(note_discounts()[end], 0.7273461226455469; atol = 1e-12)),
-        (name = "Seven-year coupon note price",
-            evaluate = () -> isapprox(note_value(), 97.92545962882491; atol = 1e-10)),
-        (name = "Macaulay duration",
-            evaluate = () -> isapprox(macaulay(), 6.116505651686405; atol = 1e-10)),
-        (name = "Modified duration",
-            evaluate = () -> isapprox(modified(), 5.978988906829331; atol = 1e-10)),
-        (name = "Convexity",
-            evaluate = () -> isapprox(convexity_value(), 41.817667688340755; atol = 1e-9)),
-        (name = "Duration-convexity price-change estimate",
-            evaluate = () -> isapprox(
-                estimated_fraction(), -0.029372223688042393; atol = 1e-12)),
-        (name = "A higher yield lowers the estimated note price",
-            evaluate = () -> estimated_fraction() < 0),
-        (name = "Approximation is within one cent of exact repricing",
-            evaluate = full_repricing_check),
+        (name="Bill uses the supplied terms", evaluate=() -> begin
+            b=bill();
+            b.par == terms.bill_par && b.rate == terms.bill_yield &&
+                b.T == terms.bill_maturity && b.n == terms.bill_compounding_frequency;
+        end),
+        (name="Six-month bill price", evaluate=() ->
+            isapprox(bill().price, 97.56097560975611; atol=1e-10)),
+        (name="Bill has the expected purchase and maturity cash flows", evaluate=() -> begin
+            b=bill();
+            isapprox(b.cashflow[0], -97.56097560975611; atol=1e-10) &&
+                b.cashflow[1] == terms.bill_par;
+        end),
+        (name="Note uses the supplied terms", evaluate=() -> begin
+            model=note();
+            model.par == terms.note_par && model.rate == terms.note_yield &&
+                model.coupon == terms.note_coupon_rate && model.T == terms.note_maturity &&
+                model.λ == terms.note_compounding_frequency;
+        end),
+        (name="Seven-year coupon note price", evaluate=() ->
+            isapprox(note().price, 97.92545962882491; atol=1e-10)),
+        (name="Note contains the purchase and fourteen future payment dates", evaluate=() ->
+            sort(collect(keys(note().cashflow))) == collect(0:14)),
+        (name="Note cash flows include the final coupon and principal", evaluate=() -> begin
+            model=note();
+            isapprox(model.cashflow[1], 2.125/1.023; atol=1e-10) &&
+                isapprox(model.cashflow[14], 102.125/1.023^14; atol=1e-10);
+        end),
+        (name="Priced note gives the expected supplied risk report", evaluate=() -> begin
+            risk=standard_note_risk(note());
+            isapprox(risk.macaulay, 6.116505651686405; atol=1e-10) &&
+                isapprox(risk.modified, 5.978988906829331; atol=1e-10) &&
+                isapprox(risk.convexity, 41.817667688340755; atol=1e-9);
+        end),
+        (name="Repricing adds 50 basis points and preserves the contract", evaluate=() -> begin
+            model=repriced();
+            isapprox(model.rate, 0.051; atol=1e-12) && model.coupon == terms.note_coupon_rate &&
+                model.par == terms.note_par && model.T == terms.note_maturity &&
+                model.λ == terms.note_compounding_frequency;
+        end),
+        (name="Repriced note has the expected lower price", evaluate=() ->
+            isapprox(repriced().price, 95.04852622680231; atol=1e-9)),
+        (name="Repricing leaves the original model unchanged", evaluate=() -> begin
+            original=reference_note();
+            original_cashflow=copy(original.cashflow);
+            original_discount=copy(original.discount);
+            changed=reprice_note(original, terms.yield_change);
+            changed !== original && original.rate == terms.note_yield &&
+                isapprox(original.price, 97.92545962882491; atol=1e-10) &&
+                original.cashflow == original_cashflow && original.discount == original_discount;
+        end),
+        (name="Repriced cash flows agree with the updated price", evaluate=() -> begin
+            model=repriced();
+            isapprox(model.cashflow[14], 102.125/1.0255^14; atol=1e-10) &&
+                isapprox(sum(model.cashflow[j] for j ∈ 1:14), model.price; atol=1e-10) &&
+                isapprox(model.cashflow[0], -model.price; atol=1e-10);
+        end),
+        (name="Complete workflow agrees with the supplied repricing estimate", evaluate=full_workflow),
     ];
 end

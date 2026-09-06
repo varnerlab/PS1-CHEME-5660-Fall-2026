@@ -1,120 +1,76 @@
 # PS1 Standard Track
 #
-# Complete only the expressions marked TODO. The supplied code handles file input,
-# cash-flow construction, and testing so the work remains focused on finance.
+# Use the package calls from the L2a Treasury pricing examples and the L2b
+# sensitivity example. Complete the three TODO items below.
 
 """
-    equivalent_growth_rate(y::Real, n::Integer) -> Float64
+    build_bill(terms::NamedTuple) -> MyUSTreasuryZeroCouponBondModel
 
-Return the continuously compounded annual growth rate equivalent to nominal annual
-yield `y` compounded `n` times per year:
+Build and price the bill using `build` and `DiscreteCompoundingModel` from
+VLQuantitativeFinancePackage. Return the priced model, including its `price` field.
 
-    g_y = n*log(1 + y/n)
+Follow L2a's "Pricing Zero-Coupon Treasury Bills Using NPV", Task 1. Use these
+entries from the supplied `terms` record to populate the package's model fields:
+
+| Model field | Supplied value | Meaning |
+|:--|:--|:--|
+| `par` | `terms.bill_par` | maturity payment in USD |
+| `rate` | `terms.bill_yield` | nominal annual yield as a decimal |
+| `T` | `terms.bill_maturity` | years to maturity |
+| `n` | `Int(terms.bill_compounding_frequency)` | compounding periods per year |
+
+Call `build(MyUSTreasuryZeroCouponBondModel, (...))` with these named fields,
+then pipe the model into `DiscreteCompoundingModel()` with `|>` and return it.
+The supplied yield already uses the nominal-yield convention needed by the model.
 """
-function equivalent_growth_rate(y::Real, n::Integer)::Float64
-    # TODO: Translate the displayed equation into one Julia expression.
-    throw("equivalent_growth_rate is not implemented yet");
+function build_bill(terms::NamedTuple)::MyUSTreasuryZeroCouponBondModel
+    # TODO: Build the bill from the supplied terms, price it, and return the model.
+    throw("build_bill is not implemented yet");
 end
 
 """
-    bill_price(par::Real, y::Real, n::Integer, T::Real) -> Float64
+    build_note(terms::NamedTuple) -> MyUSTreasuryCouponSecurityModel
 
-Return the zero-NPV purchase price of a bill under nominal annual yield `y` compounded
-`n` times per year over `T` years:
+Build and price the note using the same package calls as L2a's "The Pricing of
+United States Treasury Coupon-Bearing Notes and Bonds", Task 1, and L2b's
+"Sensitivity of Coupon Treasury Notes and Bonds", Task 1.
 
-    V_B = V_P*(1 + y/n)^(-n*T)
+| Model field | Supplied value | Meaning |
+|:--|:--|:--|
+| `par` | `terms.note_par` | maturity principal in USD |
+| `rate` | `terms.note_yield` | nominal annual yield as a decimal |
+| `coupon` | `terms.note_coupon_rate` | fixed annual coupon rate as a decimal |
+| `T` | `terms.note_maturity` | years to maturity |
+| `λ` | `Int(terms.note_compounding_frequency)` | coupon payments per year |
+
+Call `build(MyUSTreasuryCouponSecurityModel, (...))` with these named fields,
+then pipe the model into `DiscreteCompoundingModel()` with `|>` and return it.
+Julia's `λ` can be entered by typing `\\lambda` and pressing Tab.
+The package constructs the cash-flow schedule and computes the price.
 """
-function bill_price(par::Real, y::Real, n::Integer, T::Real)::Float64
-    # TODO: Translate the displayed equation into one Julia expression.
-    throw("bill_price is not implemented yet");
+function build_note(terms::NamedTuple)::MyUSTreasuryCouponSecurityModel
+    # TODO: Build the note from the supplied terms, price it, and return the model.
+    throw("build_note is not implemented yet");
 end
 
 """
-    price_implied_growth_rate(price::Real, par::Real, T::Real) -> Float64
+    reprice_note(note::MyUSTreasuryCouponSecurityModel, yield_change::Real)
+        -> MyUSTreasuryCouponSecurityModel
 
-Return the annualized continuously compounded growth rate implied by a zero-coupon
-purchase price and maturity payment:
+Return a repriced copy of `note` after adding `yield_change` to its nominal annual
+yield. Follow the L2b sensitivity example's use of `deepcopy`, a changed `rate`,
+and the discrete-compounding pricing call.
 
-    g_B = log(V_P/V_B)/T
+Create a copy with `deepcopy(note)`, add `yield_change` to the copy's `rate`,
+then pipe the copy into `DiscreteCompoundingModel()` and return it.
+Keep the original model unchanged so its price remains available for comparison.
+The coupon rate, par, maturity, and coupon frequency stay fixed.
+
+The supplied change is an addition of 0.005: 4.60% becomes 5.10%.
+All inputs use decimal annual rates. The return value is the complete priced model.
 """
-function price_implied_growth_rate(price::Real, par::Real, T::Real)::Float64
-    # TODO: Translate the displayed equation into one Julia expression.
-    throw("price_implied_growth_rate is not implemented yet");
+function reprice_note(note::MyUSTreasuryCouponSecurityModel,
+    yield_change::Real)::MyUSTreasuryCouponSecurityModel
+    # TODO: Copy the note, add the yield change, reprice the copy, and return it.
+    throw("reprice_note is not implemented yet");
 end
-
-"""
-    discount_factors(y::Real, n::Integer, payment_times::AbstractVector) -> Vector{Float64}
-
-Return one discount factor for every payment time `t_j`, measured in years:
-
-    D(0,t_j) = (1 + y/n)^(-n*t_j)
-"""
-function discount_factors(y::Real, n::Integer,
-    payment_times::AbstractVector)::Vector{Float64}
-    # TODO: Use broadcasting (the dot operators) to evaluate the equation at every time.
-    throw("discount_factors is not implemented yet");
-end
-
-"""
-    present_value(cashflows::AbstractVector, discounts::AbstractVector) -> Float64
-
-Return the sum of the discounted cash flows:
-
-    V_B = sum(CF_j*D(0,t_j))
-"""
-function present_value(cashflows::AbstractVector, discounts::AbstractVector)::Float64
-    # TODO: Multiply aligned cash flows and discount factors, then add the products.
-    throw("present_value is not implemented yet");
-end
-
-"""
-    macaulay_duration(payment_times, cashflows, discounts, price) -> Float64
-
-Return the present-value-weighted average payment time:
-
-    D_mac = sum(t_j*CF_j*D(0,t_j))/V_B
-"""
-function macaulay_duration(payment_times::AbstractVector, cashflows::AbstractVector,
-    discounts::AbstractVector, price::Real)::Float64
-    # TODO: Translate the displayed weighted-average equation into one expression.
-    throw("macaulay_duration is not implemented yet");
-end
-
-"""
-    modified_duration(macaulay::Real, y::Real, n::Integer) -> Float64
-
-Convert Macaulay duration to modified duration:
-
-    D_mod = D_mac/(1 + y/n)
-"""
-function modified_duration(macaulay::Real, y::Real, n::Integer)::Float64
-    # TODO: Translate the displayed equation into one Julia expression.
-    throw("modified_duration is not implemented yet");
-end
-
-"""
-    convexity(period_indices, cashflows, discounts, price, y, n) -> Float64
-
-Return the convexity of a discretely compounded fixed cash-flow stream:
-
-    K = sum(j*(j+1)*CF_j*D_j)/(n^2*V_B*(1 + y/n)^2)
-"""
-function convexity(period_indices::AbstractVector, cashflows::AbstractVector,
-    discounts::AbstractVector, price::Real, y::Real, n::Integer)::Float64
-    # TODO: Translate the displayed equation into one expression.
-    throw("convexity is not implemented yet");
-end
-
-"""
-    price_change_fraction(modified::Real, convexity_value::Real, yield_change::Real) -> Float64
-
-Estimate the fractional price change using duration and convexity:
-
-    Delta V/V approximately -D_mod*Delta y + (1/2)*K*(Delta y)^2
-"""
-function price_change_fraction(modified::Real, convexity_value::Real,
-    yield_change::Real)::Float64
-    # TODO: Translate the displayed approximation into one Julia expression.
-    throw("price_change_fraction is not implemented yet");
-end
-
