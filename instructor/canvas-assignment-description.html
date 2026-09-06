@@ -2,143 +2,138 @@
 INSTRUCTOR-FACING CANVAS COPY
 
 1. Open this file on GitHub and select Download raw file.
-2. Open the downloaded .html file in a web browser.
+2. Open the downloaded .html file in a web browser; it will render as a page.
 3. Select the rendered page (Command+A on macOS or Ctrl+A on Windows).
 4. Copy it, then paste it into the ordinary Canvas assignment description box.
 5. Preview the Canvas assignment and verify the three links before publishing.
-
-Canvas settings: ZIP file uploads, unlimited attempts, initial deadline
-September 20, 2026 at 11:59 PM America/New_York, and submissions open until
-December 19, 2026 at 11:59 PM America/New_York for eligible revisions.
-The links below point to the published student release.
 -->
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <title>CHEME 5660 PS1 — Canvas Assignment</title>
-</head>
-<body>
-<h2>PS1: Treasury Valuation, Interest-Rate Risk, and Funding a Future Obligation</h2>
+
+<h2>Problem Set 1: Treasury Valuation and Funding Risk</h2>
 
 <p>
-  <strong>Released:</strong> September 6, 2026<br>
-  <strong>Due:</strong> September 20, 2026 at 11:59 PM ET<br>
+  <strong>Initial submission deadline:</strong>
+  Sunday, September 20, 2026, at 11:59 PM ET<br>
   <strong>Maximum score:</strong> 4 points
 </p>
 
-<h3>Get started</h3>
-
-<p>
-  Read the
-  <a href="https://github.com/varnerlab/PS1-CHEME-5660-Fall-2026/blob/ps1-cheme-5660-2026.1/README.md">PS1 instructions</a>
-  and
-  <a href="https://github.com/varnerlab/PS1-CHEME-5660-Fall-2026/blob/ps1-cheme-5660-2026.1/RUBRIC.md">grading rubric</a>.
-  Download <strong>Source code (zip)</strong> under <strong>Assets</strong> on the
-  <a href="https://github.com/varnerlab/PS1-CHEME-5660-Fall-2026/releases/tag/ps1-cheme-5660-2026.1">PS1 release page</a>.
-</p>
-
-<p>
-  Extract the ZIP. In VS Code, choose <strong>File → Open Folder</strong> and
-  select the extracted PS1 folder containing <code>README.md</code>,
-  <code>Project.toml</code>, and <code>check_submission.jl</code>.
-  This assignment is supported with Julia <strong>1.12.7</strong> and uses <code>VLQuantitativeFinancePackage</code>, as in the lecture examples.
-</p>
-
-<p>
-  In VS Code, choose <strong>Terminal → New Terminal</strong>. From the extracted
-  PS1 folder containing <code>Project.toml</code>, run this setup command once:
-</p>
-
-<pre><code>julia --project=. --startup-file=no -e 'using Pkg; Pkg.instantiate()'</code></pre>
-
-<p>The first setup needs an internet connection and may take several minutes.</p>
-
-<h3>Complete your work</h3>
-
-<p>
-  Choose <strong>Standard</strong> or <strong>Advanced</strong> and enter
-  <code>standard</code> or <code>advanced</code> as the only text in <code>TRACK.txt</code>. Save the file. The starter selects <code>standard</code>.
-  Standard uses the lecture package to build and price a bill and a note, then reprice the note after a yield change. The checker supplies the duration and convexity report.
-  Advanced includes the same valuation tasks, then compares four Treasury strategies for a firm with USD 74,000 today and a USD 100,000 payment due in seven years. The firm cannot borrow or add money. Students use the supplied comparison function and recommend one of the four strategies, using funding counts and shortfall amounts to explain the risk of missing the payment.
-</p>
+<h3>Download and instructions</h3>
 
 <ul>
-  <li><strong>Standard:</strong> complete <code>src/Standard.jl</code> and answer the three discussion questions in <code>responses/Standard.md</code>.</li>
-  <li><strong>Advanced:</strong> complete the three valuation tasks and the funding-comparison call in <code>src/Advanced.jl</code>, then answer the three discussion questions in <code>responses/Advanced.md</code>. All Advanced work is contained in these two files.</li>
+  <li>
+    <a href="https://github.com/varnerlab/PS1-CHEME-5660-Fall-2026/blob/ps1-cheme-5660-2026.1/README.md">
+      Read the complete PS1 instructions
+    </a>
+  </li>
+  <li>
+    <a href="https://github.com/varnerlab/PS1-CHEME-5660-Fall-2026/releases/tag/ps1-cheme-5660-2026.1">
+      Download the PS1 release
+    </a>
+  </li>
+  <li>
+    <a href="https://github.com/varnerlab/PS1-CHEME-5660-Fall-2026/blob/ps1-cheme-5660-2026.1/RUBRIC.md">
+      Read the grading rubric
+    </a>
+  </li>
 </ul>
 
 <p>
-  Save your code and run the checker to display the financial results in the terminal.
-  Open your selected <code>responses/Standard.md</code> or <code>responses/Advanced.md</code> file in VS Code and edit the Markdown source. Replace each <code>TODO: Write your response here.</code> line with your answer, keeping the answer markers. Save your answers and rerun the checker before creating the ZIP.
+  On the release page, scroll to <strong>Assets</strong> and select
+  <strong>Source code (zip)</strong>. Extract the archive before beginning.
+  This problem set is supported with Julia 1.12.7.
+</p>
+
+<h3>Choose your track</h3>
+
+<p>Enter <code>standard</code> or <code>advanced</code> in <code>TRACK.txt</code>, then complete the matching files:</p>
+
+<ul>
+  <li><strong>Standard:</strong> <code>src/Standard.jl</code> and <code>responses/Standard.md</code>.</li>
+  <li><strong>Advanced:</strong> <code>src/Advanced.jl</code> and <code>responses/Advanced.md</code>.</li>
+</ul>
+
+<p>
+  Advanced includes the Standard valuation work and adds a funding comparison.
+  An accepted Advanced score of 4 earns <strong>one Magic Point</strong>, awarded once for PS1.
 </p>
 
 <p>
-  Only your selected track is graded. An accepted 4 on Advanced earns
-  <strong>one Magic Point</strong>, including through an eligible revision.
-  This bonus is awarded once for PS1. Keep the function docstrings and answer
-  markers. Leave the supplied support code, data, tests, reports, and checker unchanged.
+  Complete your code and all three discussion answers. Keep the function docstrings
+  and answer markers. Leave the supplied support code, tests, data, reports, and checker unchanged.
 </p>
 
-<p>
-  <strong>Changing tracks:</strong> You may switch between Standard and Advanced
-  before submitting or on an eligible revision. Each submission is graded only on
-  the track selected in <code>TRACK.txt</code>. If you change tracks, update
-  <code>TRACK.txt</code>, complete that track's code and response files, and rerun
-  the checker. You may reuse your own valuation code, but the discussion questions
-  differ between tracks. We keep your highest score across all submissions, even
-  if you change tracks. An unfinished Advanced submission is graded under the
-  Advanced rubric; it does not automatically receive a Standard grade.
-</p>
+<h3>Check your work</h3>
 
-<h3>Check and submit</h3>
+<p>From the extracted folder containing <code>Project.toml</code>, run this setup command once:</p>
 
-<p>
-  In VS Code, choose <strong>Terminal → New Terminal</strong>.
-  Run this command from the extracted PS1 folder containing
-  <code>Project.toml</code> and <code>check_submission.jl</code>:
-</p>
+<pre><code>julia --project=. --startup-file=no -e 'using Pkg; Pkg.instantiate()'</code></pre>
+
+<p>Setup needs an internet connection. Then check your saved work with:</p>
 
 <pre><code>julia --project=. --startup-file=no check_submission.jl</code></pre>
 
 <p>
-  The checker runs the tests, displays your results, and creates <code>MANIFEST.txt</code>.
-  Tests are expected to fail until you complete the starter code. Advanced also
-  saves the comparison in <code>results/advanced-strategies.csv</code> and individual futures in <code>results/advanced-scenario-outcomes.csv</code>. Passing all tests gives
-  <strong>pending completion review</strong>. To earn a 4, the teaching team must
-  also accept your code, documentation, and discussion answers.
+  The checker runs the tests, displays the results for your discussion answers,
+  and creates <code>MANIFEST.txt</code>. Tests are expected to fail until you complete
+  the starter code. The checker does <strong>not</strong> upload anything to Canvas.
 </p>
+
+<h3>Submit to Canvas</h3>
 
 <ol>
-  <li>Run the checker, then ZIP the entire extracted PS1 folder, including <code>TRACK.txt</code>, <code>src</code>, <code>responses</code>, <code>data</code>, and <code>MANIFEST.txt</code>. If you cannot run the checker, submit your attempted work without <code>MANIFEST.txt</code>.</li>
-  <li>Name the ZIP <code>CHEME-5660-PS1-&lt;your netid&gt;.zip</code>, replacing <code>&lt;your netid&gt;</code> with your NetID. For example, <code>CHEME-5660-PS1-abc123.zip</code>.</li>
-  <li>Upload the ZIP to this Canvas assignment by the initial deadline. The checker does not upload it for you.</li>
+  <li>Zip the entire problem-set folder after running the checker.</li>
+  <li>
+    Rename the archive to
+    <code>CHEME-5660-PS1-&lt;your netid&gt;.zip</code>.
+  </li>
+  <li>
+    Replace the complete <code>&lt;your netid&gt;</code> placeholder,
+    including the angle brackets, with your actual NetID. For example:
+    <code>CHEME-5660-PS1-abc123.zip</code>.
+  </li>
+  <li>Upload the ZIP file to this Canvas assignment.</li>
 </ol>
 
-<h3>Submission and work policies</h3>
+<p>
+  <strong>Submit a readable ZIP containing attempted work by the initial deadline,
+  even if incomplete or tests fail.</strong> If you cannot run the checker, submit
+  without <code>MANIFEST.txt</code>. Missing, empty, or unreadable submissions receive
+  a locked score of 0 and are ineligible for revisions or Magic Points.
+</p>
+
+<h3>Revisions</h3>
 
 <p>
-  <strong>Submit a readable ZIP containing the assignment and your attempted work
-  by the deadline, even if incomplete or tests fail.</strong>
-  This preserves your eligibility for infinite revisions. Missing, empty, or
-  unreadable submissions receive a <strong>Frozen Zero</strong> with no revisions
-  or Magic Points.
+  After the initial deadline, eligible students may revise and resubmit PS1
+  until <strong>December 19, 2026 at 11:59 PM ET</strong>.
+  Return to this same Canvas assignment,
+  select <strong>New Attempt</strong>, and upload the revised ZIP file.
 </p>
 
 <p>
-  Eligible students may revise PS1 as many times as they like until
-  <strong>December 19, 2026 at 11:59 PM ET</strong>, the last day of academic activity.
-  Run the checker again, create an updated ZIP, and use <strong>New Attempt on this
-  same Canvas assignment</strong>. We grade revisions and keep your highest score.
-  Canvas late labels carry no penalty.
+  Canvas may label these revisions “late.” That is expected and does not
+  create a penalty under the infinite-revision policy. Each revision will be
+  graded, and the highest score earned will be retained.
 </p>
 
 <p>
-  You may discuss ideas and use documentation, AI tools, and internet resources.
-  Submit your own work and be able to explain it. Do not share code or solutions.
-  Reference solutions are released after the initial deadline for understanding
-  mistakes and debugging. Copying them results in a locked score of 0.
-  These rules also apply to revisions.
+  You may switch tracks before submitting or on an eligible revision. Update
+  <code>TRACK.txt</code>, complete that track's code and answers, and rerun the checker.
+  Only the selected track is graded; Advanced work does not automatically receive
+  a Standard grade. We keep your highest score across tracks.
 </p>
-</body>
-</html>
+
+<h3>Collaboration and academic integrity</h3>
+
+<p>
+  Submit independent work. You may discuss the problem set with classmates,
+  but you may not share code or solutions directly. You may use Julia
+  documentation, AI tools, and internet resources, but you remain responsible
+  for understanding and explaining everything you submit.
+</p>
+
+<p>
+  The reference solution will be released after the initial deadline. You may
+  consult it to understand mistakes and debug your work, but your revision must
+  remain your own implementation. Copying the reference solution results in
+  a locked score of 0 for this assignment. These rules also apply to revisions.
+</p>
