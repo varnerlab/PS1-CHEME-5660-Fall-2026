@@ -1,26 +1,26 @@
-# PS1 Advanced-Track Finance Response
+# PS1 Advanced-Track Discussion Questions
 
-Answer each prompt in two to four sentences. Replace each response placeholder below, keeping the surrounding HTML answer markers. Run `report_results.jl` to display your computed values. Report rates as percentages and monetary values in USD with appropriate precision.
+Replace each placeholder, keeping the surrounding HTML answer markers. `check_submission.jl` displays your computed values and writes the strategy comparison under `results/`. Use two to four explanatory sentences per discussion question; a compact table of numerical results may accompany your sentences. Report rates as percentages and monetary values in USD with sensible precision.
 
-## 1. Short rate versus investment return
+## 1. Same maturity, different cash flows
 
-Compare the first CIR short rate with the price-implied one-period zero yield. Explain why the rolling calculation uses the zero-coupon growth factor rather than substituting the short rate directly into an accumulation formula.
+Compare `STRIP7` and `N7` using the common starting budget. Report the initial budget, the par amount purchased by each, the cash remaining immediately after the main `N7` purchase, and the note's semiannual coupon payment. Explain why a seven-year maturity alone does not establish that `N7` will fund the $100,000 obligation. Describe what happens to its coupons and residual cash under the supplied rule.
 
 <!-- answer-1:start -->
 TODO: Write your response here.
 <!-- answer-1:end -->
 
-## 2. Funding outcomes
+## 2. Compare the permitted sequences
 
-Report the initial lock cost, number and fraction of the 40 scenarios in which Roll fully funds the liability, mean terminal value, mean shortfall across all scenarios, and maximum observed shortfall. Interpret what these quantities say about reinvestment risk.
+Among the 50 main sequences (excluding `STRIP7`), identify a sequence with the highest funded fraction and a sequence with the lowest mean shortfall. If there is a tie, choose any tied sequence. For each, report its label, funded count out of 40, mean terminal wealth, mean shortfall, and maximum observed shortfall. Explain the trade-off between these two measures of funding risk. Use matching scenario IDs if you compare individual futures.
 
 <!-- answer-2:start -->
 TODO: Write your response here.
 <!-- answer-2:end -->
 
-## 3. Recommendation
+## 3. Recommendation and limits of the evidence
 
-The firm treats the \$100,000 payment as a hard obligation and has not authorized external borrowing at period 7. Recommend Lock or Roll and support the recommendation using the scenario results. Also identify one reason a decision-maker might nevertheless prefer the other strategy and one limitation of using these 40 model-generated scenarios as evidence. A concise four-sentence response is sufficient.
+The firm treats the $100,000 payment as a hard obligation and has not authorized borrowing or additional contributions. Recommend the STRIP or a permitted sequence using the results, and identify a reason an investor with greater tolerance for deficits might prefer an alternative. Explain why a sequence must be selected before knowing which future occurs, and give one limitation of interpreting the 40 simulated futures as evidence about real-world funding reliability.
 
 <!-- answer-3:start -->
 TODO: Write your response here.

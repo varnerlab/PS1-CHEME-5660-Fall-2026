@@ -2,7 +2,7 @@
 
 Every problem set in CHEME 5660 is worth the same maximum ordinary score: **4**. Students are responsible only for the requirements of their selected track. The unselected track may retain its starter code and response placeholders.
 
-Standard contains **13 public checks**; Advanced contains **16**. Each check is evaluated independently. Individual formula checks use supplied inputs, and one check per track exercises the complete calculation. A check that cannot run counts as failed.
+Standard contains **13 public checks**; Advanced contains **16**. Each check is evaluated independently. Individual formula checks use supplied inputs, and complete-calculation checks exercise the supplied cash-flow workflow. Standard has 12 formula checks and one complete-calculation check; Advanced has 14 formula checks and two complete-calculation checks. A check that cannot run counts as failed.
 
 | Score | Standard | Advanced |
 |:---:|:---|:---|
@@ -28,7 +28,7 @@ To earn a 4, the selected track must meet all of these requirements:
 - Public functions document their purpose, inputs, outputs, and relevant errors. Preserve the supplied docstrings and update them if your implementation needs additional explanation.
 - Any private helper has a concise contract, and non-obvious logic has useful comments.
 - No unresolved starter TODO, placeholder error, or knowingly incomplete task remains in the selected solution. Remove or update TODO comments when their tasks are complete.
-- All three selected finance responses give relevant, internally consistent, good-faith explanations and the requested numerical results with clear units. They need not match a single model answer. An omitted, nonsensical, or unrelated response does not satisfy the completion requirement.
+- Answers to all three discussion questions for the selected track give relevant, internally consistent, good-faith explanations and the requested numerical results with clear units. They need not match a single model answer. An omitted, nonsensical, or unrelated response does not satisfy the completion requirement.
 
 The local checker detects missing docstrings and empty, missing, or unfinished marked answer blocks. Those mechanical checks cannot assess the substance of the work.
 

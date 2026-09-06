@@ -1,15 +1,18 @@
 # PS1 Advanced Track
 #
 # Complete only the expressions marked TODO. CIR simulation, file input, and scenario
-# iteration are supplied so the work remains focused on the lock-versus-roll decision.
+# iteration are supplied so the work remains focused on funding the future obligation.
 
 """
     price_implied_growth_rate(zero_price::Real, T::Real) -> Float64
 
-Return the annualized continuously compounded zero yield implied by a price per dollar
-of maturity value:
+Return the price-implied annualized log growth rate `g_B` from L2a, given a price
+per dollar of maturity value and a remaining holding time `T` in years:
 
-    z(t,T) = -log(P(t,T))/T
+    g_B = log(1/P)/T = -log(P)/T
+
+This equals L1b's benchmark `g_y = 2*log(1 + y/2)` only when `P` is the
+zero-NPV model price at the chosen valuation yield `y` under `n = 2`.
 """
 function price_implied_growth_rate(zero_price::Real, T::Real)::Float64
     # TODO: Translate the displayed equation into one Julia expression.
@@ -17,41 +20,46 @@ function price_implied_growth_rate(zero_price::Real, T::Real)::Float64
 end
 
 """
-    growth_factor(zero_price::Real) -> Float64
+    affordable_lots(cash::Real, price_per_lot::Real) -> Int
 
-Return the maturity wealth received per dollar invested in a zero-coupon position:
+Return the number of whole lots affordable without borrowing. Inputs are available
+cash and the purchase price of one 10,000 USD-par lot, both in USD:
 
-    G = 1/P
+    lots = floor(cash/price_per_lot)
+
+Assume cash >= 0 and price_per_lot > 0. Use `floor(Int, ...)` to return an integer.
 """
-function growth_factor(zero_price::Real)::Float64
-    # TODO: Translate the displayed equation into one Julia expression.
-    throw("growth_factor is not implemented yet");
+function affordable_lots(cash::Real, price_per_lot::Real)::Int
+    # TODO: Round the affordable number of lots down to an integer.
+    throw("affordable_lots is not implemented yet");
 end
 
 """
-    lock_cost(liability::Real, seven_period_zero_price::Real) -> Float64
+    uninvested_cash(cash::Real, lots::Integer, price_per_lot::Real) -> Float64
 
-Return the amount invested today in a seven-period principal STRIP to fund the known
-liability exactly at maturity:
+Return the cash remaining after purchasing `lots` whole lots, in USD:
 
-    W_0 = L*P(0,7)
+    remainder = cash - lots*price_per_lot
+
+The supplied engine passes a nonnegative, affordable lot count. Residual cash earns zero.
 """
-function lock_cost(liability::Real, seven_period_zero_price::Real)::Float64
-    # TODO: Translate the displayed equation into one Julia expression.
-    throw("lock_cost is not implemented yet");
+function uninvested_cash(cash::Real, lots::Integer, price_per_lot::Real)::Float64
+    # TODO: Subtract the total purchase cost from the available cash.
+    throw("uninvested_cash is not implemented yet");
 end
 
 """
-    terminal_wealth(initial_value::Real, growth_factors::AbstractVector) -> Float64
+    coupon_payment(par::Real, coupon_rate::Real, n::Integer) -> Float64
 
-Return terminal wealth after rolling the complete sequence of one-period positions:
+Return one coupon payment in USD on the total held par amount, following L2a:
 
-    W_7 = W_0*product(G_k)
+    C = par*coupon_rate/n
+
+Here coupon_rate is a decimal annual coupon rate and n = 2 payments per year.
 """
-function terminal_wealth(initial_value::Real,
-    growth_factors::AbstractVector)::Float64
-    # TODO: Use `prod(...)` to multiply the supplied period growth factors.
-    throw("terminal_wealth is not implemented yet");
+function coupon_payment(par::Real, coupon_rate::Real, n::Integer)::Float64
+    # TODO: Translate the displayed coupon equation into one expression.
+    throw("coupon_payment is not implemented yet");
 end
 
 """

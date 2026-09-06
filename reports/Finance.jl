@@ -46,34 +46,79 @@ end
 """
     advanced_report_rows() -> Vector{NamedTuple}
 
-Build the lock-versus-roll calculations using the student's Advanced functions.
-Probabilities and extrema describe only the supplied, equally weighted scenarios.
+Display common terms, the L2a price-implied growth rate, and initial N7 holdings.
+All sequences share this budget and the same time-zero market prices.
 """
 function advanced_report_rows()::Vector{NamedTuple}
-    # Load the liability and frozen scenario paths -
     terms = load_numeric_record(joinpath(_PATH_TO_DATA, "advanced-terms.csv"));
-    scenarios = load_cir_scenarios(joinpath(_PATH_TO_DATA, "cir-rate-scenarios.csv"));
-    first_price = scenarios.zero_prices[1,1];
-    initial = () -> lock_cost(terms.liability, terms.seven_period_zero_price);
-    terminal = () -> scenario_terminal_values(initial(), scenarios.growth_factors);
-
+    market = load_market_scenarios(joinpath(_PATH_TO_DATA, "cir-market-scenarios.csv"));
+    capital = terms.liability*terms.seven_year_zero_price;
+    note_price = market.prices[1,1,6]*terms.lot_par/100;
+    lots = () -> affordable_lots(capital, note_price);
     return [
-        (label = "First CIR short rate", evaluate = () -> 100*scenarios.short_rates[1,1], units = "% per year"),
-        (label = "First price-implied continuous zero yield", evaluate = () ->
-            100*price_implied_growth_rate(first_price, 1.0), units = "% per year"),
-        (label = "First one-period growth factor", evaluate = () -> growth_factor(first_price), units = "USD per USD invested"),
-        (label = "Initial capital / lock cost", evaluate = initial, units = "USD"),
-        (label = "Lock terminal payment", evaluate = () -> terms.liability, units = "USD (under model assumptions)"),
-        (label = "Supplied scenario count", evaluate = () -> size(scenarios.growth_factors, 1), units = "scenarios"),
-        (label = "Roll fully funded scenarios", evaluate = () -> count(>=(terms.liability), terminal()), units = "scenarios"),
-        (label = "Roll fully funded fraction", evaluate = () ->
-            100*funding_probability(terminal(), terms.liability), units = "% of supplied scenarios"),
-        (label = "Roll mean terminal value", evaluate = () -> mean(terminal()), units = "USD"),
-        (label = "Roll mean shortfall (all scenarios)", evaluate = () -> mean_shortfall(terminal(), terms.liability), units = "USD"),
-        (label = "Roll maximum observed shortfall", evaluate = () -> maximum_shortfall(terminal(), terms.liability), units = "USD"),
-        (label = "Roll first-scenario funding ratio", evaluate = () -> funding_ratio(terminal()[1], terms.liability), units = "USD per USD owed"),
-        (label = "Roll maximum observed terminal value", evaluate = () -> maximum(terminal()), units = "USD"),
+        (label="Common initial budget", evaluate=() -> capital, units="USD"),
+        (label="Required year-7 payment", evaluate=() -> terms.liability, units="USD"),
+        (label="Par amount per whole lot", evaluate=() -> terms.lot_par, units="USD par"),
+        (label="Annual coupon rate for every note", evaluate=() -> 100*terms.coupon_rate, units="%"),
+        (label="First one-year bill growth rate g_B", evaluate=() ->
+            100*price_implied_growth_rate(market.prices[1,1,2]/100, 1.0), units="% per year"),
+        (label="Initial N7 price per lot", evaluate=() -> note_price, units="USD"),
+        (label="Initial N7 lots purchased", evaluate=lots, units="lots"),
+        (label="Initial N7 par purchased", evaluate=() -> lots()*terms.lot_par, units="USD par"),
+        (label="Initial cash after N7 purchase", evaluate=() ->
+            uninvested_cash(capital, lots(), note_price), units="USD"),
+        (label="N7 coupon every six months", evaluate=() ->
+            coupon_payment(lots()*terms.lot_par, terms.coupon_rate, 2), units="USD"),
     ];
+end
+
+"""
+    print_sequence_comparison(root::String) -> Nothing
+
+Print all fixed strategies and save their summaries and scenario-level terminal wealth.
+Results are generated from student formulas and are feedback, not official grades.
+"""
+function print_sequence_comparison(root::String)::Nothing
+    terms = load_numeric_record(joinpath(_PATH_TO_DATA, "advanced-terms.csv"));
+    market = load_market_scenarios(joinpath(_PATH_TO_DATA, "cir-market-scenarios.csv"));
+    rows = evaluate_sequences(market, terms);
+    count = size(market.prices, 1);
+    result_path = joinpath(root, "results");
+    mkpath(result_path);
+    summary_path = joinpath(result_path, "advanced-strategies.csv");
+    outcomes_path = joinpath(result_path, "advanced-scenario-outcomes.csv");
+    println("\nStrategy comparison: 50 fixed sequences plus the STRIP benchmark");
+    println("B1 = one-year bill; Nm = m-year coupon note. Every sequence is chosen before the future is known.");
+    @printf("%-24s %8s %14s %14s %14s\n", "Sequence", "Funded", "Mean wealth", "Mean shortfall", "Max shortfall");
+    open(summary_path, "w") do summary_io
+        open(outcomes_path, "w") do outcomes_io
+            println(summary_io, "sequence,funded_scenarios,scenario_count,funding_fraction,mean_terminal_value,mean_shortfall,maximum_shortfall,status");
+            println(outcomes_io, "sequence,scenario_id,terminal_value,funding_ratio,shortfall");
+            for row ∈ rows
+                if !isempty(row.detail)
+                    println(row.label, ": UNAVAILABLE — ", row.detail);
+                    println(summary_io, row.label, ",,$(count),,,,,unavailable");
+                    continue;
+                end
+                result = row.summary;
+                funded = Base.count(>=(terms.liability), row.terminal_values);
+                @printf("%-24s %3d/%-4d %14.2f %14.2f %14.2f\n", row.label, funded, count,
+                    result.mean_terminal_value, result.mean_shortfall, result.maximum_shortfall);
+                @printf(summary_io, "%s,%d,%d,%.10f,%.10f,%.10f,%.10f,available\n", row.label,
+                    funded, count, result.probability_funded, result.mean_terminal_value,
+                    result.mean_shortfall, result.maximum_shortfall);
+                for (scenario, value) ∈ enumerate(row.terminal_values)
+                    @printf(outcomes_io, "%s,%d,%.10f,%.10f,%.10f\n", row.label, scenario,
+                        value, row.funding_ratios[scenario], row.shortfalls[scenario]);
+                end
+            end
+        end
+    end
+    println("\nFunding fractions describe these 40 simulated futures; observed maxima are not worst-case guarantees.");
+    println("The same future is used for every strategy within each scenario_id.");
+    println("Wrote ", summary_path);
+    println("Wrote ", outcomes_path);
+    return nothing;
 end
 
 """

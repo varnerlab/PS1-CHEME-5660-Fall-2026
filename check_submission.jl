@@ -7,7 +7,7 @@ using SHA    # SHA-256 fingerprints of the submitted source and response files
 
 println("""
 ==================== important ====================
-This script checks your work and prepares MANIFEST.txt.
+This script checks your work, displays your financial results, and prepares MANIFEST.txt.
 It does NOT upload anything to Canvas.
 You must still create a ZIP archive and upload it through Canvas yourself.
 """);
@@ -22,6 +22,7 @@ const _CHECK_SETUP = let
         track ∈ ("standard", "advanced") || throw(ArgumentError(
             "TRACK.txt must contain exactly `standard` or `advanced`"));
         include(joinpath(_CHECK_ROOT, "Include.jl"));
+        include(joinpath(_CHECK_ROOT, "reports", "Finance.jl"));
         include(joinpath(_CHECK_ROOT, "test", "public_$(track)_tests.jl"));
         checks = track == "standard" ? standard_public_checks() : advanced_public_checks();
         (track = track, checks = checks, detail = "");
@@ -47,7 +48,7 @@ end;
 """
     write_submission_fingerprints(io, root, track) -> Nothing
 
-Record regular source files recursively, TRACK.txt, and the selected finance response.
+Record regular source files recursively, TRACK.txt, and the selected discussion-question file.
 Missing required files are recorded explicitly so incomplete work can still be packaged.
 """
 function write_submission_fingerprints(io::IO, root::String, track::String)::Nothing
@@ -77,7 +78,7 @@ end
 """
     main() -> Nothing
 
-Run the selected checks, report mechanical completion checks, and write MANIFEST.txt.
+Run the selected checks, display financial results, and write MANIFEST.txt.
 All-passing numerical work remains pending human completion review; this is local feedback.
 """
 function main()::Nothing
@@ -115,6 +116,21 @@ function main()::Nothing
         println(io, "status: ", status);
         isempty(_CHECK_SOURCE.detail) || println(io, "setup/source error: ", _CHECK_SOURCE.detail);
         write_submission_fingerprints(io, _CHECK_ROOT, track);
+    end
+
+    # Display the student's calculations for the discussion questions -
+    if tests_ran
+        try
+            rows = track == "standard" ? standard_report_rows() : advanced_report_rows();
+            print_finance_report(rows, "PS1 $(titlecase(track)) Financial Results");
+            if track == "advanced"
+                print_sequence_comparison(_CHECK_ROOT);
+            end
+        catch caught
+            println("\nFinancial results unavailable: ", sprint(showerror, caught));
+        end
+    else
+        println("\nFinancial results unavailable until the setup/source error is fixed.");
     end
 
     # Give feedback appropriate to the current submission -

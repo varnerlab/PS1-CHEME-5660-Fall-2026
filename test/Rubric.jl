@@ -135,9 +135,9 @@ const STANDARD_DOCUMENTED_FUNCTIONS = [
 
 const ADVANCED_DOCUMENTED_FUNCTIONS = [
     :price_implied_growth_rate,
-    :growth_factor,
-    :lock_cost,
-    :terminal_wealth,
+    :affordable_lots,
+    :uninvested_cash,
+    :coupon_payment,
     :funding_ratio,
     :shortfall,
     :funding_probability,

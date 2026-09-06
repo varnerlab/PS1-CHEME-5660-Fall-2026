@@ -1,6 +1,6 @@
-# PS1 Standard-Track Finance Response
+# PS1 Standard-Track Discussion Questions
 
-Answer each prompt in two to four sentences. Replace each response placeholder below, keeping the surrounding HTML answer markers. Run `report_results.jl` to display your computed values. Report rates as percentages and monetary values in USD with appropriate precision.
+Answer each discussion question in two to four sentences. Replace each response placeholder below, keeping the surrounding HTML answer markers. `check_submission.jl` displays your computed values along with the test results. Report rates as percentages and monetary values in USD with appropriate precision.
 
 ## 1. Prices and rate conventions
 
