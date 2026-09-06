@@ -112,8 +112,7 @@ const MAIN_MATURITIES = (1, 2, 3, 5, 7); # one-year bill or fixed-coupon notes, 
 Return every ordered sequence of MAIN_MATURITIES that sums to `horizon` years.
 For seven years there are 50 sequences. [2, 5] and [5, 2] are different strategies.
 The returned vectors are independent copies, so later edits to one do not alter
-another. Throw ArgumentError when horizon <= 0. The STRIP benchmark is added
-separately by `evaluate_sequences`.
+another. Throw ArgumentError when horizon <= 0.
 """
 function investment_sequences(horizon::Integer=7)::Vector{Vector{Int}}
     horizon > 0 || throw(ArgumentError("horizon must be positive"));
@@ -302,39 +301,17 @@ function simulate_sequence(sequence::AbstractVector{<:Integer}, market::NamedTup
 end
 
 """
-    strip_funding(terms::NamedTuple) -> NamedTuple
-
-Compute the initial cost of STRIP lots sufficient to pay the liability and the
-additional USD contribution required beyond `initial_budget`. `seven_year_zero_price`
-is the supplied price per USD 1 par. The liability must be a positive whole number
-of `lot_par` lots. Return `lots`, `par`, `initial_capital`, and
-`additional_contribution`. Invalid amounts raise ArgumentError.
-"""
-function strip_funding(terms::NamedTuple)::NamedTuple
-    all(x -> isfinite(x) && x > 0,
-        (terms.liability, terms.lot_par, terms.seven_year_zero_price)) ||
-        throw(ArgumentError("liability, lot size, and STRIP price must be positive"));
-    isfinite(terms.initial_budget) && terms.initial_budget >= 0 ||
-        throw(ArgumentError("initial budget must be finite and nonnegative"));
-    isinteger(terms.liability/terms.lot_par) ||
-        throw(ArgumentError("liability must be a whole number of STRIP lots"));
-    capital = terms.liability*terms.seven_year_zero_price;
-    return (lots=Int(terms.liability/terms.lot_par), par=terms.liability,
-        initial_capital=capital, additional_contribution=max(capital-terms.initial_budget, 0.0));
-end
-
-"""
     evaluate_sequences(market, terms; sequences) -> Vector{NamedTuple}
 
-Evaluate the supplied sequence vectors at `terms.initial_budget`, adding a fully
-funded STRIP alternative. `sequences` must be a nonempty collection of distinct
+Evaluate only the supplied sequence vectors at `terms.initial_budget`.
+`sequences` must be a nonempty collection of distinct
 holding-time vectors. Each must total the horizon using MAIN_MATURITIES.
 Invalid choices raise ArgumentError. Market inputs follow `load_market_scenarios`.
 
-The STRIP receives enough additional capital at time zero to purchase the promised
-liability payment. Each sequence receives only the available budget. Every row
-therefore records `initial_capital` and `additional_contribution` in USD explicitly.
-The STRIP's empty sequence denotes a single principal payment at the horizon.
+Every strategy starts with the same available budget and receives no additional
+contributions. Each row records `initial_capital` in USD. The budget must be finite
+and nonnegative; liability and lot size must be finite and positive. Invalid
+amounts raise ArgumentError.
 
 Rows also contain `label`, `sequence`, per-scenario `terminal_values` in USD,
 `funding_ratios`, `shortfalls` in USD, `summary`, and `detail`. The summary reports
@@ -349,26 +326,26 @@ function evaluate_sequences(market::NamedTuple, terms::NamedTuple;
         throw(ArgumentError("provide distinct, nonempty strategy choices"));
     all(s -> !isempty(s) && all(y -> y isa Integer && y in MAIN_MATURITIES, s) &&
         sum(s) == horizon, sequences) || throw(ArgumentError("invalid strategy holding times"));
-    strip_plan = strip_funding(terms);
+    all(x -> isfinite(x) && x > 0, (terms.liability, terms.lot_par)) ||
+        throw(ArgumentError("liability and lot size must be positive"));
+    isfinite(terms.initial_budget) && terms.initial_budget >= 0 ||
+        throw(ArgumentError("initial budget must be finite and nonnegative"));
     count = size(market.prices, 1);
     rows = NamedTuple[];
-    # Apply each strategy to the same scenario IDs; only STRIP receives extra capital.
-    for sequence in vcat([Int[]], sequences)
-        is_strip = isempty(sequence);
-        label = is_strip ? "STRIP7" : sequence_label(sequence);
-        capital = is_strip ? strip_plan.initial_capital : terms.initial_budget;
-        contribution = is_strip ? strip_plan.additional_contribution : 0.0;
+    # Apply each strategy to the same scenario IDs and initial budget -
+    for sequence in sequences
+        label = sequence_label(sequence);
+        capital = terms.initial_budget;
         try
-            values = is_strip ? fill(terms.liability, count) :
-                [simulate_sequence(sequence, market, s, terms).terminal_value for s in 1:count];
+            values = [simulate_sequence(sequence, market, s, terms).terminal_value for s in 1:count];
             summary = funding_summary(values, terms.liability);
             push!(rows, (label=label, sequence=copy(sequence), initial_capital=capital,
-                additional_contribution=contribution, terminal_values=values,
+                terminal_values=values,
                 funding_ratios=funding_ratio.(values, terms.liability),
                 shortfalls=shortfall.(values, terms.liability), summary=summary, detail=""));
         catch caught
             push!(rows, (label=label, sequence=copy(sequence), initial_capital=capital,
-                additional_contribution=contribution, terminal_values=Float64[],
+                terminal_values=Float64[],
                 funding_ratios=Float64[], shortfalls=Float64[], summary=nothing,
                 detail=sprint(showerror, caught)));
         end

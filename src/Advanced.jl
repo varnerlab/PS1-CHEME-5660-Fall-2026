@@ -80,7 +80,7 @@ end
 
 Compare four investments using the supplied `evaluate_sequences` function.
 `market` is the supplied set of 40 price futures. `terms` contains the available
-budget, liability, lot size, coupon terms, horizon, and STRIP price from
+budget, liability, lot size, coupon terms, and horizon from
 `data/advanced-terms.csv`. File loading is supplied by the checker.
 
 Represent the four strategies as vectors of holding times in years:
@@ -89,9 +89,9 @@ Call `evaluate_sequences(market, terms; sequences=choices)`, where `choices`
 contains those four vectors, and return its result unchanged.
 
 The supplied function handles purchases, coupon reinvestment, and funding
-statistics. It also adds `STRIP7`, which requires an additional contribution
-today. Each row reports `initial_capital` and `additional_contribution` in USD,
-40 `terminal_values` in USD, and a `summary` containing `probability_funded`,
+statistics. All four strategies use only the available budget, with no additional
+contributions. Each row reports `initial_capital` in USD, 40 `terminal_values`
+in USD, and a `summary` containing `probability_funded`,
 `mean_terminal_value`, `mean_shortfall`, and `maximum_shortfall`.
 The funded fraction counts equality as funded. Mean shortfall includes zeros
 for funded futures. A nonempty `detail` field describes an unavailable result.

@@ -4,6 +4,7 @@ MANIFEST.txt
 # Instructor-only material is kept locally and is not part of the student release -
 instructor/
 solution/
+needed-edits.md
 
 # Generated student feedback -
 results/

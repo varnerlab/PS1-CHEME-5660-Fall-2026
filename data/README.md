@@ -6,7 +6,7 @@
 
 ## Advanced track
 
-`advanced-terms.csv` specifies the USD 74,000 available budget (`initial_budget`), USD 100,000 year-7 liability, USD 10,000-par lots, fixed 4.25% annual coupon, semiannual payments, horizon, and seven-year STRIP price per USD 1 par. The four sequences use only `initial_budget`. The fully funded STRIP costs `liability * seven_year_zero_price` = USD 74,967.841402 and receives the additional USD 967.841402 at time 0. No option receives a later contribution. The lot size is an assignment constraint.
+`advanced-terms.csv` specifies the USD 74,000 available budget (`initial_budget`), USD 100,000 year-7 liability, USD 10,000-par lots, fixed 4.25% annual coupon, semiannual payments, and horizon. All four sequences start with `initial_budget`. The firm cannot borrow or add money. Later purchases use only investment cash flows and cash held over. The lot size is an assignment constraint.
 
 The required sequences are `N7`, `N2-N5`, `N5-N2`, and seven consecutive `B1` investments. Other maturities remain in the frozen market file, but are not required comparisons. The shared valuation/repricing tasks use `standard-terms.csv`, whose fixed-yield experiment is separate from these simulated market prices.
 
@@ -27,7 +27,7 @@ The six-month bill is used by the common cash-management rule. Collect cash flow
 
 ## CIR and the lecture notation
 
-The generator simulates an uncertain instantaneous rate `r_t`, corresponding to the role of `g(t)` inside L1b's discounting integral. It uses the CIR pricing formula to obtain a discount curve from the current rate state and sums discounted coupon/principal payments to price notes. It does not price a security by looking at the future realized rate path.
+The Cox-Ingersoll-Ross (CIR) model generates the supplied futures. The generator simulates an uncertain instantaneous rate `r_t`, corresponding to the role of `g(t)` inside L1b's discounting integral. It uses the CIR pricing formula to obtain a discount curve from the current rate state and sums discounted coupon/principal payments to price notes. It does not price a security by looking at the future realized rate path.
 
 `cir-parameters.csv` records the seed and numerical settings. The 52 Euler steps per year are simulation resolution; market observations occur every six months. The same model parameters are used for simulation and pricing, suppressing the physical-versus-risk-neutral distinction as a teaching simplification. Model paths do not establish real-world probabilities or guarantee coverage of adverse stress cases.
 

@@ -15,9 +15,31 @@ You must still create a ZIP archive and upload it through Canvas yourself.
 const _CHECK_ROOT = @__DIR__;
 include(joinpath(_CHECK_ROOT, "test", "Rubric.jl"));
 
+"""
+    clear_previous_advanced_results(root::String) -> Nothing
+
+Clear data rows from the two generated Advanced CSVs, retaining their column headers.
+Run before loading the selected track so setup, source, or comparison errors cannot
+leave old financial results looking current. Missing files are left absent. Other
+files in results/ are untouched. File-access errors propagate to setup feedback.
+"""
+function clear_previous_advanced_results(root::String)::Nothing
+    for name in ("advanced-strategies.csv", "advanced-scenario-outcomes.csv")
+        path = joinpath(root, "results", name);
+        if isfile(path)
+            header = open(readline, path);
+            open(path, "w") do io
+                println(io, header); # only a successful current report repopulates numerical rows
+            end
+        end
+    end
+    return nothing;
+end
+
 # Validate the track and load supplied checks before loading student functions -
 const _CHECK_SETUP = let
     try
+        clear_previous_advanced_results(_CHECK_ROOT);
         track = lowercase(strip(read(joinpath(_CHECK_ROOT, "TRACK.txt"), String)));
         track ∈ ("standard", "advanced") || throw(ArgumentError(
             "TRACK.txt must contain exactly `standard` or `advanced`"));

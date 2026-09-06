@@ -1,2 +1,2 @@
-liability,lot_par,coupon_rate,compounding_frequency,horizon_years,seven_year_zero_price,initial_budget
-100000.00,10000.00,0.042500,2,7,0.749678414020,74000.00
+liability,lot_par,coupon_rate,compounding_frequency,horizon_years,initial_budget
+100000.00,10000.00,0.042500,2,7,74000.00
