@@ -4,18 +4,15 @@ INSTRUCTOR-FACING CANVAS COPY
 1. Open this file on GitHub and select Download raw file.
 2. Open the downloaded .html file in a web browser; it will render as a page.
 3. Select the rendered page (Command+A on macOS or Ctrl+A on Windows).
-4. Replace the existing Canvas assignment description with the copied page.
-   Do not paste inside the old description.
+4. Copy it, then paste it into the ordinary Canvas assignment description box.
 5. Preview the Canvas assignment and verify the three links before publishing.
-
-If the old left margin remains, open the Canvas HTML editor, select ALL existing
-HTML, and replace it with this file's full contents. This removes any old wrapper.
 -->
 
 <h2>PS1: Treasury Valuation, Interest-Rate Risk, and Funding a Future Obligation</h2>
 
 <p>
-  <strong>Initial submission deadline:</strong> Sunday, September 20, 2026, at 11:59 PM ET<br>
+  <strong>Initial submission deadline:</strong>
+  Sunday, September 20, 2026, at 11:59 PM ET<br>
   <strong>Maximum score:</strong> 4 points
 </p>
 
@@ -23,84 +20,107 @@ HTML, and replace it with this file's full contents. This removes any old wrappe
 
 <ul>
   <li>
-    <a href="https://github.com/varnerlab/PS1-CHEME-5660-Fall-2026/blob/ps1-cheme-5660-2026.1/README.md"> Read the complete PS1 instructions
+    <a href="https://github.com/varnerlab/PS1-CHEME-5660-Fall-2026/blob/ps1-cheme-5660-2026.1/README.md">
+      Read the complete PS1 instructions
     </a>
   </li>
   <li>
-    <a href="https://github.com/varnerlab/PS1-CHEME-5660-Fall-2026/releases/tag/ps1-cheme-5660-2026.1"> Download the PS1 release
+    <a href="https://github.com/varnerlab/PS1-CHEME-5660-Fall-2026/releases/tag/ps1-cheme-5660-2026.1">
+      Download the PS1 release
     </a>
   </li>
   <li>
-    <a href="https://github.com/varnerlab/PS1-CHEME-5660-Fall-2026/blob/ps1-cheme-5660-2026.1/RUBRIC.md"> Read the grading rubric
+    <a href="https://github.com/varnerlab/PS1-CHEME-5660-Fall-2026/blob/ps1-cheme-5660-2026.1/RUBRIC.md">
+      Read the grading rubric
     </a>
   </li>
 </ul>
 
-<p> On the release page, scroll to <strong>Assets</strong> and select
-  <strong>Source code (zip)</strong>. Extract the archive before beginning. This assignment was built and tested with Julia 1.12.7.
+<p>
+  On the release page, scroll to <strong>Assets</strong> and select
+  <strong>Source code (zip)</strong>. Extract the archive before beginning.
+  This problem set is supported with Julia 1.12.7.
 </p>
 
-<h3>Choose your track</h3>
-
-<p>Enter <code>standard</code> or <code>advanced</code> in <code>TRACK.txt</code>, then complete the matching files:</p>
-
-<ul>
-  <li><strong>Standard:</strong> <code>src/Standard.jl</code> and <code>responses/Standard.md</code>.</li>
-  <li><strong>Advanced:</strong> <code>src/Advanced.jl</code> and <code>responses/Advanced.md</code>.</li>
-</ul>
-
-<p> Advanced includes the Standard valuation work and adds a funding comparison. An accepted Advanced score of 4 earns <strong>one Magic Point</strong>, awarded once for PS1.
-</p>
-
-<p> Complete your code and all three discussion answers. Keep the function docstrings and answer markers. Leave the supplied support code, tests, data, reports, and checker unchanged.
+<p>
+  The starter code is intentionally incomplete, so the tests will fail
+  initially. Select <code>standard</code> or <code>advanced</code> in
+  <code>TRACK.txt</code>. Complete that track's file in <code>src</code> and its
+  three answers in <code>responses</code>, keeping the docstrings and answer markers.
+  Do not modify the supplied support code, tests, data, reports, or checker to make an
+  incomplete solution appear to pass.
 </p>
 
 <h3>Check your work</h3>
 
-<p>From the extracted folder containing <code>Project.toml</code>, run this setup command once:</p>
+<p>From the extracted problem-set folder containing <code>Project.toml</code>, run this setup command once:</p>
 
-<pre style="display: block; background-color: #f5f5f5; border: 1px solid #c7cdd1; border-radius: 4px; padding: 14px 16px; margin: 12px 0 18px; white-space: pre-wrap; overflow-wrap: break-word; font-family: Consolas, Monaco, monospace; font-size: 14px; line-height: 1.5; color: #2d3b45;"><code>julia --project=. --startup-file=no -e 'using Pkg; Pkg.instantiate()'</code></pre>
+<pre><code>julia --project=. --startup-file=no -e 'using Pkg; Pkg.instantiate()'</code></pre>
 
-<p>Setup needs an internet connection. Then check your saved work with:</p>
+<p>Then check your saved work with:</p>
 
-<pre style="display: block; background-color: #f5f5f5; border: 1px solid #c7cdd1; border-radius: 4px; padding: 14px 16px; margin: 12px 0 18px; white-space: pre-wrap; overflow-wrap: break-word; font-family: Consolas, Monaco, monospace; font-size: 14px; line-height: 1.5; color: #2d3b45;"><code>julia --project=. --startup-file=no check_submission.jl</code></pre>
+<pre><code>julia --project=. --startup-file=no check_submission.jl</code></pre>
 
-<p> The checker runs the tests, displays the results for your discussion answers, and creates <code>MANIFEST.txt</code>. Tests are expected to fail until you complete the starter code. The checker does <strong>not</strong> upload anything to Canvas.
+<p>
+  The checker runs the public tests, displays results for your discussion answers,
+  and creates <code>MANIFEST.txt</code>.
+  It does <strong>not</strong> upload anything to Canvas.
 </p>
 
 <h3>Submit to Canvas</h3>
 
 <ol>
   <li>Zip the entire problem-set folder after running the checker.</li>
-  <li> Rename the archive to
+  <li>
+    Rename the archive to
     <code>CHEME-5660-PS1-&lt;your netid&gt;.zip</code>.
   </li>
-  <li> Replace the complete <code>&lt;your netid&gt;</code> placeholder, including the angle brackets, with your actual NetID. For example:
+  <li>
+    Replace the complete <code>&lt;your netid&gt;</code> placeholder,
+    including the angle brackets, with your actual NetID. For example:
     <code>CHEME-5660-PS1-abc123.zip</code>.
   </li>
   <li>Upload the ZIP file to this Canvas assignment.</li>
 </ol>
 
 <p>
-  <strong>Submit a readable ZIP containing attempted work by the initial deadline, even if incomplete or tests fail.</strong> If you cannot run the checker, submit without <code>MANIFEST.txt</code>. Missing, empty, or unreadable submissions receive a locked score of 0 and are ineligible for revisions or Magic Points.
+  <strong>Submit a readable ZIP containing attempted work by the initial deadline,
+  even if incomplete or tests fail.</strong> If you cannot run the checker, submit
+  without <code>MANIFEST.txt</code>. Missing, empty, or unreadable submissions receive
+  a locked score of 0 and are ineligible for revisions or Magic Points.
 </p>
 
 <h3>Revisions</h3>
 
-<p> After the initial deadline, eligible students may revise and resubmit PS1 until <strong>December 19, 2026 at 11:59 PM ET</strong>. Return to this same Canvas assignment, select <strong>New Attempt</strong>, and upload the revised ZIP file.
+<p>
+  After the initial deadline, eligible students may revise and resubmit PS1
+  until <strong>December 19, 2026 at 11:59 PM ET</strong>.
+  Return to this same Canvas assignment,
+  select <strong>New Attempt</strong>, and upload the revised ZIP file.
 </p>
 
-<p> Canvas may label these revisions &ldquo;late.&rdquo; That is expected and does not create a penalty under the infinite-revision policy. Each revision will be graded, and the highest score earned will be retained.
-</p>
-
-<p> You may switch tracks before submitting or on an eligible revision. Update
-  <code>TRACK.txt</code>, complete that track's code and answers, and rerun the checker. Only the selected track is graded; Advanced work does not automatically receive a Standard grade. We keep your highest score across tracks.
+<p>
+  Canvas may label these revisions “late.” That is expected and does not
+  create a penalty under the infinite-revision policy. Each revision will be
+  graded, and the highest score earned will be retained, including across tracks.
+  You may switch tracks before submitting or on an eligible revision; update
+  <code>TRACK.txt</code>, complete the selected track's files, and rerun the checker.
+  Only the selected track is graded, with no automatic fallback to Standard.
+  An accepted Advanced score of 4 earns <strong>one Magic Point</strong>, awarded once for PS1.
 </p>
 
 <h3>Collaboration and academic integrity</h3>
 
-<p> Submit independent work. You may discuss the problem set with classmates, but you may not share code or solutions directly. You may use Julia documentation, AI tools, and internet resources, but you remain responsible for understanding and explaining everything you submit.
+<p>
+  Submit independent work. You may discuss the problem set with classmates,
+  but you may not share code or solutions directly. You may use Julia
+  documentation, AI tools, and internet resources, but you remain responsible
+  for understanding and explaining everything you submit.
 </p>
 
-<p> The reference solution will be released after the initial deadline. You may consult it to understand mistakes and debug your work, but your revision must remain your own implementation. Copying the reference solution results in a locked score of 0 for this assignment. These rules also apply to revisions.
+<p>
+  The reference solution will be released after the initial deadline. You may
+  consult it to understand mistakes and debug your work, but your revision must
+  remain your own implementation. Copying the reference solution results in
+  a locked score of 0 for this assignment. These rules also apply to revisions.
 </p>
